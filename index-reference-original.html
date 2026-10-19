@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دخل و خرج | مدیریت مالی</title>
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#f4f8ff;--card:#fff;--text:#172033;--muted:#73809a;
+ --primary:#2878ff;--primary2:#145bd1;--danger:#e55353;--line:#e5ebf5;
+}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:520px;min-height:100vh;margin:auto;padding:18px 16px 92px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.icon{border:0;background:var(--card);width:44px;height:44px;border-radius:14px;box-shadow:0 4px 18px #173b6812;cursor:pointer;display:grid;place-items:center;color:var(--text)}.menu-button{width:82px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 7px;font-family:inherit}.menu-lines{display:flex;align-items:center}.menu-label{font-size:11px;font-weight:800;color:var(--text);white-space:nowrap}
+.svg-icon{width:21px;height:21px;display:block;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav .svg-icon{width:22px;height:22px}.homebtn{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--primary);color:#fff;border:5px solid var(--bg);box-shadow:0 5px 18px #2878ff55}.homebtn .svg-icon{width:25px;height:25px;stroke-width:2.1}
+h1{font-size:21px;margin:0}.sub{font-size:12px;color:var(--muted);margin-top:5px}
+.card{background:var(--card);border-radius:22px;padding:18px;box-shadow:0 7px 25px #173b6810;margin-bottom:14px}
+.balance{background:linear-gradient(135deg,var(--primary),var(--primary2));color:white}
+.balance .label{opacity:.85;font-size:13px}.balance h2{font-size:31px;margin:9px 0 3px}.balance small{opacity:.8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{padding:15px;border:1px solid var(--line);border-radius:17px;background:var(--card)}
+.stat b{display:block;font-size:18px;margin-top:7px}.green{color:#15966b}.red{color:var(--danger)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}
+.section-title h3{margin:0;font-size:16px}.section-title span{font-size:12px;color:var(--muted)}
+.expense{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.expense:last-child{border:0}.expense .name{font-size:14px}.expense .amount{font-weight:bold}
+.bottom{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:auto;background:var(--card);height:75px;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;z-index:5}
+.nav{border:0;background:none;color:var(--muted);font-weight:bold;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav.active{color:var(--primary)}
+.page{display:none}.page.active{display:block}
+label{display:block;font-size:13px;margin:12px 0 6px}input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);font:inherit}.date-selects{display:grid;grid-template-columns:1fr 1.35fr;gap:9px}.today-date{text-align:center;color:var(--muted);font-size:13px;font-weight:bold;margin:-2px 2px 12px}
+.money-wrap{position:relative}
+.money-wrap input{padding-left:72px}
+.money-unit{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);opacity:.65;pointer-events:none}
+button.primary{width:100%;border:0;border-radius:14px;padding:13px;background:var(--primary);color:#fff;font-weight:bold;margin-top:14px;cursor:pointer}
+.category-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.cat{padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--card);cursor:pointer;text-align:center}
+.cat.selected{border-color:var(--primary);background:#eef5ff;color:var(--primary)}
+#extra{display:none}#extra.active{display:block!important}.extra-list{padding-right:18px;color:var(--muted);line-height:2}
+.pastel{--bg:#fff5fa;--card:#fff;--text:#392b3b;--muted:#927f90;--primary:#d97ba8;--primary2:#b65b8c;--line:#f1dce8}
+.dark{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--primary:#4d8dff;--primary2:#2865cf;--line:#374151}
+.dark .icon,.dark input,.dark select,.dark .stat,.dark .cat{background:var(--card);color:var(--text)}
+.dark .cat.selected{background:#1d3b69;color:#7eb0ff}
+/* Explicit blue-and-white theme, preserved independently from the green theme */
+body.blue-theme{--bg:#f4f8ff;--card:#ffffff;--text:#172033;--muted:#73809a;--primary:#2878ff;--primary2:#145bd1;--danger:#e55353;--line:#e5ebf5}
+body.blue-theme .balance{background:linear-gradient(135deg,#2878ff,#145bd1)}
+body.blue-theme .homebtn{background:#2878ff;box-shadow:0 5px 18px #2878ff55}
+body.blue-theme .avatar,body.blue-theme .welcome-logo{background:linear-gradient(135deg,#2878ff,#145bd1)}
+/* Additional themes; blue-and-white remains the original default */
+body.green-theme{--bg:#edf8f2;--card:#ffffff;--text:#15352a;--muted:#6c887b;--primary:#15966b;--primary2:#08734f;--line:#d8ebe1}
+body.green-theme .balance{background:linear-gradient(135deg,#20b981,#08734f)}
+body.green-theme .homebtn{background:#15966b;box-shadow:0 5px 18px #15966b55}
+body.luxury-theme{--bg:#f4f1eb;--card:#fffdf8;--text:#252a38;--muted:#777789;--primary:#6750a4;--primary2:#32245f;--line:#e5dfd2}
+body.luxury-theme .balance{background:linear-gradient(125deg,#302354 0%,#6750a4 48%,#c19a50 100%)}
+body.luxury-theme .homebtn{background:linear-gradient(135deg,#6750a4,#c19a50);box-shadow:0 5px 18px #6750a455}
+body.luxury-theme .avatar,body.luxury-theme .welcome-logo{background:linear-gradient(135deg,#32245f,#a17c37)}
+body.luxury-theme .stat{background:linear-gradient(145deg,var(--card),#f5f0e5)}
+
+/* Premium onboarding + personalized greeting */
+.greeting-wrap{display:flex;align-items:center;gap:10px;margin:0 2px 16px}
+.avatar{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-size:18px;font-weight:800;box-shadow:0 7px 20px #2878ff35}
+.greeting-kicker{font-size:11px;color:var(--muted);margin-bottom:3px}
+.greeting-name{font-size:17px;font-weight:800}
+.welcome-modal{position:fixed;inset:0;background:rgba(10,20,40,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:22px;z-index:100;opacity:0;visibility:hidden;transition:.25s}
+.welcome-modal.show{opacity:1;visibility:visible}
+.welcome-box{width:min(430px,100%);background:var(--card);border:1px solid rgba(255,255,255,.45);border-radius:30px;padding:30px 24px 24px;box-shadow:0 25px 70px rgba(0,0,0,.22);text-align:right;transform:translateY(12px) scale(.98);transition:.25s}
+.welcome-modal.show .welcome-box{transform:none}
+.welcome-logo{width:64px;height:64px;border-radius:21px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;display:grid;place-items:center;font-size:30px;margin-bottom:22px;box-shadow:0 12px 30px #2878ff3d}
+.welcome-box h2{margin:0 0 9px;font-size:24px;letter-spacing:-.4px}
+.welcome-box p{margin:0 0 22px;color:var(--muted);font-size:13px;line-height:1.9}
+.welcome-box input{height:50px;font-size:15px;outline:none;transition:.2s}
+.welcome-box input:focus{border-color:var(--primary);box-shadow:0 0 0 4px #2878ff18}
+.welcome-error{height:18px;color:var(--danger);font-size:11px;margin-top:6px}
+.welcome-box button{height:50px;margin-top:6px}
+body.modal-open{overflow:hidden}
+
+/* Compact system date and time */
+.polito-compact-datetime{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;margin-bottom:14px}
+.polito-compact-datetime div{font-size:13px;color:var(--muted);font-weight:700}
+.polito-compact-datetime strong{font-size:22px;direction:ltr;letter-spacing:.5px}
+
+
+.gold-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.gold-row:last-child{border-bottom:0}.gold-name{font-size:13px}.gold-value{font-weight:900;font-size:14px}.dollar-main{display:flex;align-items:center;justify-content:space-between;padding:16px 2px}.dollar-label{font-size:14px;color:var(--muted)}.dollar-value{font-size:25px;font-weight:900}.market-source{font-size:11px;color:var(--muted);text-align:center;margin-top:8px}
+
+.market-collapsible{overflow:hidden}
+.market-collapse-head{width:100%;border:0;background:transparent;color:var(--text);padding:0;margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:right;cursor:pointer;font:inherit}
+.market-collapse-title{display:flex;align-items:center;gap:7px;min-width:0}
+.market-collapse-title .svg-icon{flex:0 0 auto}
+.market-collapse-meta{display:flex;align-items:center;gap:8px;min-width:0;color:var(--muted);font-size:10px}
+.market-collapse-meta>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.market-chevron{font-size:20px;line-height:1;transition:transform .22s ease;transform:rotate(0deg)}
+.market-collapsible.is-collapsed .market-chevron{transform:rotate(180deg)}
+.market-collapse-body{padding-top:14px;max-height:1400px;opacity:1;overflow:hidden;transition:max-height .28s ease,opacity .2s ease,padding-top .28s ease}
+.market-collapsible.is-collapsed .market-collapse-body{max-height:0;opacity:0;padding-top:0}
+.crypto-list{display:flex;flex-direction:column;gap:8px}
+.crypto-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
+.crypto-name{display:flex;align-items:center;gap:9px;min-width:0}
+.crypto-symbol{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);font-size:11px;font-weight:900;flex:0 0 auto}
+.crypto-label{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crypto-code{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:2px}
+.crypto-price{text-align:left;direction:ltr;font-size:14px;font-weight:900;white-space:nowrap;display:flex;flex-direction:column;align-items:flex-end;gap:3px}.crypto-toman-inline{font-size:10px;color:var(--primary);font-weight:800;direction:rtl}
+.crypto-price small{display:block;font-size:9px;color:var(--muted);font-weight:600;margin-top:2px}
+.crypto-loading{color:var(--muted);font-size:13px;line-height:1.9;padding:6px 0}
+
+.tgju-live-box{min-height:58px;overflow:hidden;border-radius:14px} .market-live-note{font-size:10px;color:var(--muted);line-height:1.8;text-align:center;margin-top:8px}.tgju-live-box tgju{display:block;width:100%}.market-price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}.market-mini-card{min-width:0}.market-mini-title{font-weight:700}.market-mini-value{font-size:18px;font-weight:800;margin-top:5px}.market-mini-sub{font-size:11px;color:var(--muted);margin-top:4px}@media(min-width:560px){.market-price-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.market-price-grid{display:flex;flex-direction:column;gap:7px}.market-price-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.market-price-row span{font-size:13px;font-weight:750}.market-price-row b{font-size:14px;white-space:nowrap}.market-price-row small{display:block;color:var(--muted);font-size:9px;margin-top:2px;font-weight:600}.market-price-error{color:var(--muted);font-size:12px;text-align:center;padding:8px}
+
+/* Wealth-management premium finish */
+:root{--bg:#f3f6fb;--card:#ffffff;--text:#142238;--muted:#718096;--primary:#176b55;--primary2:#0b4539;--line:#dfe8e5}
+body{background:radial-gradient(ellipse at top right,#e4f4ed 0,transparent 42%),var(--bg)}
+.card{border:1px solid color-mix(in srgb,var(--line) 78%,transparent);box-shadow:0 12px 32px rgba(18,45,56,.065);border-radius:23px}
+.balance{background:linear-gradient(135deg,#123d35 0%,#14745a 58%,#23a477 100%);box-shadow:0 16px 34px rgba(15,94,69,.2)}
+.icon,.stat,.cat,input,select{transition:border-color .2s,box-shadow .2s,transform .2s}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px #16805c18}
+.primary{background:linear-gradient(135deg,var(--primary),var(--primary2))!important;box-shadow:0 7px 16px #176b5528}
+.market-collapse-head:focus-visible,button:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.tool-result{padding:14px;border-radius:15px;background:var(--bg);border:1px solid var(--line);margin-top:10px;line-height:1.9}
+.tool-result strong{color:var(--primary)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<style id="polito-pro-upgrade">
+:root{
+  --pro-bg:#f5f7fb;--pro-card:rgba(255,255,255,.86);--pro-text:#111827;
+  --pro-muted:#6b7280;--pro-accent:#5b5ce2;--pro-accent2:#8b5cf6;
+}
+body{background:var(--pro-bg);}
+#politoSplash{
+ position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 20% 20%,#e9e7ff 0,transparent 34%),
+            radial-gradient(circle at 80% 80%,#dff7ff 0,transparent 36%),
+            linear-gradient(135deg,#f8f9ff,#eef2ff);
+ transition:opacity .55s ease,visibility .55s ease;
+}
+#politoSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.polito-splash-card{
+ width:min(440px,calc(100% - 32px));padding:42px 32px 34px;border-radius:30px;
+ background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);
+ box-shadow:0 30px 90px rgba(42,47,100,.18);backdrop-filter:blur(24px);
+ text-align:center;animation:politoUp .65s cubic-bezier(.2,.8,.2,1);
+}
+.polito-logo{
+ width:74px;height:74px;margin:0 auto 20px;border-radius:24px;
+ display:grid;place-items:center;color:white;font-size:30px;font-weight:800;
+ background:linear-gradient(135deg,var(--pro-accent),var(--pro-accent2));
+ box-shadow:0 15px 35px rgba(91,92,226,.3);
+}
+.polito-splash-card h1{margin:0 0 10px;color:var(--pro-text);font-size:29px;letter-spacing:-.7px}
+.polito-splash-card p{margin:0 auto 26px;color:var(--pro-muted);line-height:1.7;font-size:14px}
+#politoNameInput{
+ width:100%;box-sizing:border-box;border:1px solid #e5e7eb;background:white;
+ border-radius:16px;padding:15px 16px;font-size:16px;outline:none;
+ transition:.2s;direction:rtl;text-align:right;
+}
+#politoNameInput:focus{border-color:var(--pro-accent);box-shadow:0 0 0 4px rgba(91,92,226,.1)}
+#politoStartBtn{
+ width:100%;margin-top:12px;border:0;border-radius:16px;padding:15px;
+ color:white;font-weight:700;font-size:15px;cursor:pointer;
+ background:linear-gradient(135deg,var(--pro-accent),var(--pro-accent2));
+ box-shadow:0 12px 24px rgba(91,92,226,.24);transition:transform .2s,box-shadow .2s;
+}
+#politoStartBtn:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(91,92,226,.3)}
+.polito-greeting{
+ position:fixed;left:18px;right:18px;top:18px;z-index:9998;pointer-events:none;
+ display:flex;justify-content:center;opacity:0;transform:translateY(-10px);
+ transition:.45s ease;
+}
+.polito-greeting.show{opacity:1;transform:translateY(0)}
+.polito-greeting-inner{
+ padding:11px 18px;border-radius:999px;background:rgba(17,24,39,.9);color:white;
+ box-shadow:0 12px 30px rgba(0,0,0,.18);font-size:14px;font-weight:600;
+ backdrop-filter:blur(12px);
+}
+@keyframes politoUp{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+@media(max-width:520px){
+ .polito-splash-card{padding:34px 22px 26px;border-radius:26px}
+ .polito-splash-card h1{font-size:25px}
+}
+
+.assets-summary{margin-top:14px}
+.assets-total-card{cursor:pointer;background:linear-gradient(135deg,var(--card),var(--bg));border:1px solid var(--line)}
+.assets-total-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.assets-total-title{font-size:14px;font-weight:900}.assets-total-value{font-size:22px;font-weight:950;margin-top:5px}.assets-hint{font-size:11px;color:var(--muted);margin-top:5px}
+.asset-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.asset-form-grid .full{grid-column:1/-1}
+.asset-type-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.asset-type-tab{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 5px;text-align:center;font-size:11px;font-weight:800;cursor:pointer}.asset-type-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.asset-list{display:flex;flex-direction:column;gap:9px;margin-top:12px}.asset-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:15px;background:var(--bg)}.asset-name{font-weight:900;font-size:13px}.asset-qty{font-size:11px;color:var(--muted);margin-top:3px}.asset-value{text-align:left;font-weight:950;font-size:14px}.asset-value small{display:block;color:var(--muted);font-weight:600;font-size:9px;margin-top:3px}.asset-delete{border:0;background:transparent;color:var(--danger);font-size:18px;cursor:pointer;padding:2px 4px}.asset-detail-total{font-size:28px;font-weight:950;margin:4px 0 14px}.asset-detail-row{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}.asset-detail-row:last-child{border-bottom:0}.asset-detail-name{font-weight:900}.asset-detail-meta{font-size:10px;color:var(--muted);margin-top:3px}.asset-detail-val{text-align:left;font-weight:950}.asset-live-note{font-size:11px;color:var(--muted);line-height:1.8;text-align:center;margin-top:10px}
+@media(max-width:390px){.asset-type-tabs{grid-template-columns:repeat(2,1fr)}.asset-form-grid{grid-template-columns:1fr}}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+<header>
+  <button class="icon menu-button" aria-label="پیشرفته" onclick="toggleExtra()"><span class="menu-lines"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><span class="menu-label">پیشرفته</span></button>
+  <div style="text-align:center"><h1 id="appTitle">دخل و خرج</h1><div class="sub" id="subtitle">مدیریت ساده درآمد و هزینه</div></div>
+  <button class="icon" aria-label="تنظیمات" onclick="openSettings()"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 8.3a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2A1.7 1.7 0 0 0 7.8 17l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1A1.7 1.7 0 0 0 4.2 12a1.7 1.7 0 0 1 0-3.4h.2A1.7 1.7 0 0 0 5.4 5.7l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1A1.7 1.7 0 0 0 10.7 2v-.2a1.7 1.7 0 0 1 3.4 0V2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1A1.7 1.7 0 0 0 20.6 8h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 3.6Z"/></svg></button>
+</header>
+
+<div class="greeting-wrap" id="greetingWrap">
+  <div class="avatar" id="userAvatar">👤</div>
+  <div>
+    <div class="greeting-kicker" id="greetingKicker">خوش اومدی</div>
+    <div class="greeting-name" id="greetingName">کاربر</div>
+  </div>
+</div>
+
+<section id="home" class="page active">
+
+  <div class="card polito-compact-datetime" id="politoCompactDateTime">
+    <div id="politoCompactDate">یکشنبه، ۲۲ شهریور ۱۴۰۵</div>
+    <strong id="politoCompactClock">۰۰:۰۰:۰۰</strong>
+  </div>
+ <div class="card balance">
+   <div class="label" id="remainingLabel">باقی‌مانده این ماه</div>
+   <h2 id="remaining">۰ تومان</h2><small id="balanceNote">درآمد منهای مجموع هزینه‌ها</small>
+ </div>
+ <div class="grid">
+   <div class="stat"><span id="incomeLabel">درآمد</span><b class="green" id="homeIncome">۰</b></div>
+   <div class="stat"><span id="expenseLabel">هزینه</span><b class="red" id="homeExpense">۰</b></div>
+ </div>
+ <div class="section-title"><h3 id="analysisTitle">تحلیل هزینه‌ها</h3><span id="monthLabel">این ماه</span></div>
+ <div class="card" id="expenseAnalysis"><div style="color:var(--muted);font-size:13px">هنوز هزینه‌ای ثبت نشده است.</div></div>
+ <div class="assets-summary" id="homeAssetsSummary">
+   <div class="section-title"><h3>دارایی‌های من</h3><span>ارزش لحظه‌ای</span></div>
+   <div class="card assets-total-card" onclick="showPage('assetsDetail');renderAssetsDetail()">
+    <div class="assets-total-row"><div><div class="assets-total-title">ارزش کل دارایی‌ها</div><div class="assets-total-value" id="homeAssetsTotal">۰ تومان</div><div class="assets-hint">برای دیدن ارزش لحظه‌ای هر دارایی بزن</div></div><span style="font-size:24px">‹</span></div>
+   </div>
+   <div class="card" id="homeAssetsList"><div style="color:var(--muted);font-size:13px">هنوز دارایی ثبت نشده است.</div></div>
+ </div>
+</section>
+
+<section id="income" class="page">
+ <div class="section-title"><h3 id="incomeTitle">درآمد ماهانه</h3></div>
+ <div class="card">
+  <label id="monthSelectLabel">سال و ماه</label><div class="date-selects"><select id="incomeYear"></select><select id="incomeMonth"></select></div>
+  <label id="incomeAmountLabel">مبلغ درآمد</label><div class="money-wrap"><input id="incomeAmount" type="text" inputmode="numeric" placeholder="مثلاً 25,000,000" oninput="formatMoneyInput(this)"><span class="money-unit">تومان</span></div>
+  <button class="primary" onclick="saveIncome()" id="saveIncomeBtn">ثبت درآمد</button>
+ </div>
+</section>
+
+<section id="expenses" class="page">
+ <div class="section-title"><h3 id="expensesTitle">هزینه‌ها</h3></div>
+
+ <div class="card">
+  <label id="expenseMonthLabel">سال و ماه</label><div class="date-selects"><select id="expenseYear"></select><select id="expenseMonth"></select></div>
+ </div>
+
+ <div class="card">
+  <div class="section-title" style="margin-top:0"><h3 id="billsTitle">قبوض</h3><span>آب، برق، گاز و...</span></div>
+  <div class="category-grid">
+   <div class="cat selected" data-type="قبض آب" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><path d="M12 3s6 6.3 6 11a6 6 0 1 1-12 0c0-4.7 6-11 6-11Z"/></svg> قبض آب</div>
+   <div class="cat" data-type="قبض برق" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><path d="m13 2-8 11h6l-1 9 8-11h-6l1-9Z"/></svg> قبض برق</div>
+   <div class="cat" data-type="قبض گاز" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><path d="M12 3c2 3 5 5 5 9a5 5 0 1 1-10 0c0-2.4 1.4-4.3 3.3-6.1.1 2 1.1 3.3 2.2 4.1C13 7.8 12.6 5.4 12 3Z"/></svg> قبض گاز</div>
+   <div class="cat" data-type="قبض اینترنت" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg> قبض اینترنت</div>
+   <div class="cat" data-type="قبض تلفن" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><path d="M6 4h3l2 5-2 1.5a15 15 0 0 0 4.5 4.5L15 13l5 2v3c0 1.1-.9 2-2 2C10.3 20 4 13.7 4 6c0-1.1.9-2 2-2Z"/></svg> قبض تلفن</div>
+   <div class="cat" data-type="قبض موبایل" onclick="choose(this)"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 6h4M11 18h2"/></svg> قبض موبایل</div>
+  </div>
+  <label id="billAmountLabel">مبلغ قبض</label>
+  <div class="money-wrap"><input id="billAmount" type="text" inputmode="numeric" placeholder="مثلاً 250,000" oninput="formatMoneyInput(this)"><span class="money-unit">تومان</span></div>
+  <button class="primary" onclick="saveBill()" id="saveBillBtn">ثبت قبض</button>
+ </div>
+
+ <div class="card">
+  <div class="section-title" style="margin-top:0"><h3 id="installmentsTitle">اقساط</h3><span>تمام پرداخت‌های قسطی</span></div>
+  <label id="installmentNameLabel">عنوان قسط</label>
+  <input id="installmentName" placeholder="مثلاً قسط وام">
+  <label id="installmentAmountLabel">مبلغ قسط</label>
+  <div class="money-wrap"><input id="installmentAmount" type="text" inputmode="numeric" placeholder="مثلاً 2,500,000" oninput="formatMoneyInput(this)"><span class="money-unit">تومان</span></div>
+  <button class="primary" onclick="saveInstallment()" id="saveInstallmentBtn">ثبت قسط</button>
+ </div>
+
+ <div class="card">
+  <div class="section-title" style="margin-top:0"><h3 id="customTitle">هزینه سفارشی</h3></div>
+  <label id="customNameLabel">عنوان هزینه</label>
+  <input id="expenseName" placeholder="مثلاً اجاره خانه">
+  <label id="expenseAmountLabel">مبلغ</label>
+  <div class="money-wrap"><input id="expenseAmount" type="text" inputmode="numeric" placeholder="مثلاً 500,000" oninput="formatMoneyInput(this)"><span class="money-unit">تومان</span></div>
+  <button class="primary" onclick="saveCustomExpense()" id="saveExpenseBtn">ثبت هزینه</button>
+ </div>
+
+ <div class="card" id="expenseList"></div>
+</section>
+
+
+<section id="assets" class="page">
+ <div class="section-title"><h3>دارایی‌های من</h3><span>طلا، ارز و رمزارز</span></div>
+ <div class="card">
+  <div class="asset-type-tabs">
+   <button class="asset-type-tab active" data-asset-type="gold" onclick="selectAssetType('gold')">طلا</button>
+   <button class="asset-type-tab" data-asset-type="bitcoin" onclick="selectAssetType('bitcoin')">بیت‌کوین</button>
+   <button class="asset-type-tab" data-asset-type="usdt" onclick="selectAssetType('usdt')">تتر</button>
+   <button class="asset-type-tab" data-asset-type="usd" onclick="selectAssetType('usd')">دلار</button>
+  </div>
+  <div class="asset-form-grid">
+   <div class="full"><label id="assetQtyLabel">مقدار</label><input id="assetQty" type="text" inputmode="decimal" placeholder="مثلاً ۵ گرم یا ۰.۲ بیت‌کوین"></div>
+   <div class="full"><label>توضیح (اختیاری)</label><input id="assetNote" type="text" placeholder="مثلاً طلای ۱۸ عیار / کیف پول شخصی"></div>
+  </div>
+  <button class="primary" onclick="saveAsset()">افزودن به دارایی‌ها</button>
+  <div class="asset-list" id="assetList"><div style="color:var(--muted);font-size:13px">هنوز دارایی ثبت نشده است.</div></div>
+ </div>
+</section>
+
+<section id="assetsDetail" class="page">
+ <div class="section-title"><h3>ارزش لحظه‌ای دارایی‌ها</h3><span>بر اساس قیمت بازار</span></div>
+ <div class="card"><div class="assets-total-title">ارزش کل دارایی‌ها</div><div class="asset-detail-total" id="assetsDetailTotal">۰ تومان</div><div class="asset-live-note" id="assetsDetailNote">در حال دریافت قیمت‌های لحظه‌ای...</div></div>
+ <div class="card" id="assetsDetailList"><div style="color:var(--muted);font-size:13px">در حال محاسبه...</div></div>
+ <button class="primary" onclick="showPage('assets');renderAssets()">ویرایش دارایی‌ها</button>
+</section>
+
+<section id="marketPulse" class="page">
+  <div class="section-title"><h3>نبض بازار</h3><span>طلا، سکه، دلار و ارز دیجیتال</span></div>
+
+  <div class="card market-collapsible" data-market-section="gold">
+    <button class="market-collapse-head" type="button" onclick="toggleMarketSection('gold')" aria-expanded="true">
+      <span class="market-collapse-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="m7 5 5-2 5 2-5 2-5-2Z"/><path d="M7 5v6l5 2 5-2V5M5 10l-2 2 9 4 9-4-2-2M3 12v6l9 4 9-4v-6"/></svg><b>قیمت طلا و سکه</b></span>
+      <span class="market-collapse-meta"><span id="goldUpdate">در حال دریافت...</span><span class="market-chevron">⌄</span></span>
+    </button>
+    <div class="market-collapse-body" id="goldMarketBody">
+      <div id="goldPrices" class="market-price-grid">
+        <div class="market-price-row"><span>طلای ۱۸ عیار (هر گرم)</span><b>در حال دریافت...</b></div>
+      </div>
+      <div class="market-live-note">قیمت‌ها از سرویس داده TGJU دریافت می‌شوند و هر ۳۰ ثانیه تازه‌سازی می‌شوند.</div>
+    </div>
+  </div>
+
+  <div class="card market-collapsible" data-market-section="dollar">
+    <button class="market-collapse-head" type="button" onclick="toggleMarketSection('dollar')" aria-expanded="true">
+      <span class="market-collapse-title"><svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.5 8.5c-.7-.6-1.6-.9-2.5-.9-1.7 0-3 .8-3 2s1.3 1.8 3 2.2 3 .9 3 2.3-1.3 2.3-3 2.3c-1.1 0-2.1-.3-2.8-1"/><path d="M12 6v12"/></svg><b>قیمت دلار آزاد</b></span>
+      <span class="market-collapse-meta"><span id="dollarUpdate">در حال دریافت...</span><span class="market-chevron">⌄</span></span>
+    </button>
+    <div class="market-collapse-body" id="dollarMarketBody">
+      <div id="dollarPrice" class="market-price-grid"><div class="market-price-row"><span>دلار آزاد</span><b>در حال دریافت...</b></div></div>
+      <div class="market-live-note">منبع: NerkhAra؛ پشتیبان Iran Market Data • دلار آزاد</div>
+    </div>
+  </div>
+
+  <div class="card market-collapsible" data-market-section="oil">
+    <button class="market-collapse-head" type="button" onclick="toggleMarketSection('oil')" aria-expanded="false"><span class="market-collapse-title"><span style="font-size:22px">🛢️</span><b data-i18n="oilTitle">قیمت نفت</b></span><span class="market-collapse-meta"><span id="oilUpdate">در انتظار داده منبع</span><span class="market-chevron">⌄</span></span></button>
+    <div class="market-collapse-body" id="oilMarketBody"><div id="oilPrice" class="market-price-grid"><div class="market-price-row"><span data-i18n="oilBrent">نفت برنت</span><b>در حال دریافت...</b></div></div><div class="market-live-note" data-i18n="oilNote">نمایش فقط در صورت وجود نرخ نفت در منبع بازار فعلی.</div></div>
+  </div>
+  <div class="card market-collapsible is-collapsed" data-market-section="otherfx">
+    <button class="market-collapse-head" type="button" onclick="toggleMarketSection('otherfx')" aria-expanded="false"><span class="market-collapse-title"><span style="font-size:22px">🌍</span><b data-i18n="otherFxTitle">ارز سایر کشورها</b></span><span class="market-collapse-meta"><span id="otherFxUpdate">از منبع بازار</span><span class="market-chevron">⌄</span></span></button>
+    <div class="market-collapse-body" id="otherFxMarketBody"><div id="otherFxPrices" class="market-price-grid"><div class="market-price-row"><span data-i18n="otherFxLoading">ارزهای موجود در منبع در اینجا نمایش داده می‌شوند.</span><b>—</b></div></div></div>
+  </div>
+
+  <div class="card market-collapsible" data-market-section="crypto">
+    <button class="market-collapse-head" type="button" onclick="toggleMarketSection('crypto')" aria-expanded="true">
+      <span class="market-collapse-title"><svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 8.2h4.1a2.1 2.1 0 0 1 0 4.2H9h4.6a2.1 2.1 0 0 1 0 4.2H9M11 6v12M9 6h4.1M9 18h4.6"/></svg><b>قیمت لحظه‌ای ارز دیجیتال</b></span>
+      <span class="market-collapse-meta"><span id="cryptoUpdate">در حال اتصال...</span><span class="market-chevron">⌄</span></span>
+    </button>
+    <div class="market-collapse-body" id="cryptoMarketBody">
+      <div id="cryptoPrices" class="crypto-list"><div class="crypto-loading">در حال دریافت قیمت‌های لحظه‌ای ارز دیجیتال...</div></div>
+      <button class="primary" onclick="loadCryptoPrices()"><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:7px"><path d="M20 11a8 8 0 0 0-14.9-4L3 9"/><path d="M3 4v5h5M4 13a8 8 0 0 0 14.9 4L21 15"/><path d="M21 20v-5h-5"/></svg> بروزرسانی ارز دیجیتال</button>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;text-align:center">منبع: Coinbase / CoinGecko / Binance • قیمت جهانی دلاری</div>
+    </div>
+  </div>
+</section>
+
+<section id="tools" class="page">
+ <div class="section-title"><h3 data-i18n="toolsTitle">ابزار</h3><span data-i18n="goldCalcSub">محاسبه ارزش طلا</span></div>
+ <button type="button" class="primary" style="margin:0 0 14px" onclick="showPage('extra')">← بازگشت به منوی پیشرفته</button>
+ <div class="card"><div style="font-size:16px;font-weight:900" data-i18n="goldCalcTitle">محاسبه قیمت طلای نو و دست‌دوم</div><div class="sub" data-i18n="goldCalcDesc">نرخ هر گرم طلای ۱۸ عیار از همان داده بازار برنامه خوانده می‌شود.</div>
+ <label data-i18n="goldWeightLabel">وزن طلا (گرم)</label><input id="goldCalcGrams" type="number" min="0" step="any" inputmode="decimal" placeholder="مثلاً 2.5" oninput="calculateGoldValue()">
+ <label data-i18n="goldSootLabel">سوت (هر ۱۰۰۰ سوت = ۱ گرم)</label><input id="goldCalcSoot" type="number" min="0" max="999" step="1" inputmode="numeric" placeholder="مثلاً 350" oninput="calculateGoldValue()">
+ <label data-i18n="goldWageLabel">اجرت ساخت (درصد، برای طلای نو)</label><input id="goldCalcWage" type="number" min="0" max="100" step="any" value="7" oninput="calculateGoldValue()">
+ <div class="sub" id="goldCalcRate">در حال دریافت نرخ طلای ۱۸ عیار...</div><button class="primary" onclick="calculateGoldValue()" data-i18n="calculateBtn">محاسبه قیمت</button>
+ <div class="tool-result" id="goldCalcResult" aria-live="polite" data-i18n="goldCalcHint">وزن را وارد کنید تا قیمت تقریبی طلای نو و دست‌دوم نمایش داده شود.</div>
+ <div class="market-live-note" data-i18n="goldCalcDisclaimer">برآورد تقریبی است؛ اجرت واقعی، سود فروشنده و مالیات قابل‌اعمال در فاکتور نهایی ممکن است متفاوت باشد.</div></div>
+</section>
+
+<section id="settings" class="page">
+ <div class="section-title"><h3 id="settingsTitle">تنظیمات</h3></div>
+ <div class="card">
+  <label id="languageLabel">زبان</label>
+  <select id="language" onchange="setLanguage(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
+  <label id="themeLabel">تم</label>
+  <select id="theme" onchange="setTheme(this.value)">
+   <option value="blue" data-i18n="themeBlue">آبی و سفید</option><option value="green" data-i18n="themeGreen">سبز</option><option value="luxury" data-i18n="themeLuxury">لوکس و سلطنتی</option><option value="dark" data-i18n="themeDark">تیره</option><option value="pastel" data-i18n="themePastel">پاستیلی</option>
+  </select>
+ </div>
+</section>
+
+
+  <div class="card" style="cursor:pointer" onclick="showPage('marketPulse'); setTimeout(()=>{loadGoldPrices(true);loadDollarPrice(true)},100)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><b><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:6px"><path d="m12 3 3 4 4 1-3 3 .5 4.5L12 14l-4.5 1.5L8 11 5 8l4-1 3-4Z"/><path d="m4 18 3-1 2 3 3-2 3 2 2-3 3 1"/></svg> نبض بازار</b><div class="sub">قیمت طلا، سکه و دلار</div></div>
+      <span style="font-size:20px">‹</span>
+    </div>
+  </div>
+
+<section id="extra" class="page">
+ <div class="section-title"><h3 id="extraTitle">پیشرفته</h3></div>
+ <div class="card" style="cursor:pointer" onclick="showPage('marketPulse');setTimeout(()=>{loadGoldPrices(true);loadDollarPrice(true)},100)">
+   <div style="display:flex;justify-content:space-between;align-items:center">
+    <div><b><svg class="svg-icon" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin-left:7px"><path d="M4 18V6M4 18h16"/><path d="m7 14 4-4 3 3 6-7"/></svg> نبض بازار</b><div class="sub">قیمت طلا، سکه و دلار</div></div>
+    <span style="font-size:22px">‹</span>
+   </div>
+ </div>
+ <div class="card" style="cursor:pointer" onclick="showPage('assets');renderAssets()">
+   <div style="display:flex;justify-content:space-between;align-items:center"><div><b>💰 دارایی‌های من</b><div class="sub">ثبت مقدار طلا، دلار و رمزارز و ارزش لحظه‌ای آن‌ها</div></div><span style="font-size:22px">‹</span></div>
+ </div>
+ <div class="card" role="button" tabindex="0" style="cursor:pointer;border:1px solid var(--primary);background:linear-gradient(135deg,var(--card),var(--bg));box-shadow:0 8px 24px #2878ff16" onclick="showPage('tools')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showPage('tools')}"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><b style="font-size:16px">🧮 <span data-i18n="toolsTitle">ابزار</span></b><div class="sub" data-i18n="toolsSub">محاسبه‌گرهای کاربردی مالی</div><div class="sub" data-i18n="goldCalcTitle">محاسبه قیمت طلای نو و دست‌دوم</div><button type="button" class="primary" style="width:auto;padding:9px 16px;margin-top:10px" onclick="event.stopPropagation();showPage('tools')">ورود به ابزار محاسبه طلا ←</button></div><span style="font-size:22px">‹</span></div></div>
+ <div class="card"><ul class="extra-list"><li>تقویم پرداخت‌ها — آماده برای نسخه بعد</li><li>گزارش‌های پیشرفته — آماده برای نسخه بعد</li><li>پنل ادمین و پیشنهاد سرمایه‌گذاری — برای نسخه آنلاین</li></ul></div>
+</section>
+
+</div>
+
+<nav class="bottom">
+ <button class="nav" onclick="showPage('expenses',this)"><svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="M7 7V5h10v2M8 11h8M8 15h5"/></svg><span id="navExpenses">هزینه‌ها</span></button>
+ <button class="nav active" onclick="showPage('home',this)"><span class="homebtn"><svg class="svg-icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg></span><span id="navHome">خانه</span></button>
+ <button class="nav" onclick="showPage('income',this)"><svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h.01M17 15h.01M12 9v6M9.5 12h5"/></svg><span id="navIncome">درآمد</span></button>
+</nav>
+
+<script>
+const monthsFA=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+const monthsEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+let data=JSON.parse(localStorage.getItem('financeData')||'{"income":{},"expenses":[]}');
+let selectedType='آب';
+
+function fillMonths(){
+ const f=document.getElementById('incomeMonth'), e=document.getElementById('expenseMonth');
+ f.innerHTML='';e.innerHTML='';
+ monthsFA.forEach((m,i)=>{f.add(new Option(m,i));e.add(new Option(m,i));});
+}
+fillMonths();
+function fillYears(){
+  const fy=document.getElementById('incomeYear'), ey=document.getElementById('expenseYear');
+  if(!fy||!ey)return;
+  fy.innerHTML='';ey.innerHTML='';
+  for(let y=1400;y<=1500;y++){fy.add(new Option(y,y));ey.add(new Option(y,y));}
+  const saved=JSON.parse(localStorage.getItem('polito_selected_date')||'null');
+  const now=new Date();
+  const currentYear=g2j(now.getFullYear(),now.getMonth()+1,now.getDate())[0];
+  const y=(saved&&saved.y>=1400&&saved.y<=1500)?saved.y:currentYear;
+  fy.value=y;ey.value=y;
+}
+function restoreSelectedMonth(){
+  const saved=JSON.parse(localStorage.getItem('polito_selected_date')||'null');
+  const currentMonth=new Date().getMonth();
+  const m=(saved&&saved.m>=0&&saved.m<12)?saved.m:currentMonth;
+  document.getElementById('incomeMonth').value=m;
+  document.getElementById('expenseMonth').value=m;
+}
+function saveSelectedDate(){
+  localStorage.setItem('polito_selected_date',JSON.stringify({
+    y:Number(document.getElementById('incomeYear').value),
+    m:Number(document.getElementById('incomeMonth').value)
+  }));
+}
+function g2j(gy,gm,gd){
+  let gy2=gy-1600, gm2=gm-1, gd2=gd-1;
+  const gdm=[0,31,59,90,120,151,181,212,243,273,304,334];
+  let days=365*gy2+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400)+gd2+gdm[gm2];
+  if(gm2>1 && ((gy%4===0&&gy%100!==0)||gy%400===0)) days++;
+  days-=79;
+  let jy=979+33*Math.floor(days/12053); days%=12053;
+  jy+=4*Math.floor(days/1461); days%=1461;
+  if(days>365){jy+=Math.floor((days-1)/365);days=(days-1)%365;}
+  const jm=days<186?1+Math.floor(days/31):7+Math.floor((days-186)/30);
+  const jd=1+(days<186?days%31:(days-186)%30);
+  return [jy,jm,jd];
+}
+function updateTodayDate(){
+  const el=document.getElementById('todayDate'); if(!el)return;
+  const d=new Date(), j=g2j(d.getFullYear(),d.getMonth()+1,d.getDate());
+  const months=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  el.textContent=document.documentElement.lang==='en'
+    ? 'Today: '+['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()]+' '+d.getDate()+', '+d.getFullYear()
+    : 'امروز، '+j[2]+' '+months[j[1]-1]+' '+j[0];
+}
+
+fillYears();
+restoreSelectedMonth();
+
+
+function money(n){return new Intl.NumberFormat(document.documentElement.lang==='en'?'en-US':'fa-IR').format(n)+' '+(document.documentElement.lang==='en'?'Toman':'تومان')}
+function save(){localStorage.setItem('financeData',JSON.stringify(data));updateHome();renderExpenses()}
+function formatMoneyInput(input){
+ let raw=input.value.replace(/[^\d]/g,'');
+ if(raw) input.value=new Intl.NumberFormat('en-US').format(Number(raw));
+}
+function getMoneyValue(id){
+ return +(document.getElementById(id).value.replace(/[^\d]/g,'')||0);
+}
+function saveIncome(){let m=document.getElementById('incomeMonth').value,a=getMoneyValue('incomeAmount');data.income[m]=a;save();alert(document.documentElement.lang==='en'?'Income saved':'درآمد ثبت شد')}
+function choose(el){
+ document.querySelectorAll('.cat').forEach(x=>x.classList.remove('selected'));
+ el.classList.add('selected'); selectedType=el.dataset.type;
+}
+function saveBill(){
+ let m=+document.getElementById('expenseMonth').value,a=getMoneyValue('billAmount');
+ if(!a)return;
+ data.expenses.push({m:m,type:selectedType,name:selectedType,amount:a});save();
+ document.getElementById('billAmount').value='';
+}
+function saveInstallment(){
+ let m=+document.getElementById('expenseMonth').value,a=getMoneyValue('installmentAmount'),n=document.getElementById('installmentName').value.trim();
+ if(!a)return;
+ data.expenses.push({m:m,type:'قسط',name:n||'قسط',amount:a});save();
+ document.getElementById('installmentAmount').value='';document.getElementById('installmentName').value='';
+}
+function saveCustomExpense(){
+ let m=+document.getElementById('expenseMonth').value,a=getMoneyValue('expenseAmount'),n=document.getElementById('expenseName').value.trim();
+ if(!a)return;
+ data.expenses.push({m:m,type:'هزینه سفارشی',name:n||'هزینه سفارشی',amount:a});save();
+ document.getElementById('expenseAmount').value='';document.getElementById('expenseName').value='';
+}
+function updateHome(){
+ let m=document.getElementById('incomeMonth').value, inc=data.income[m]||0;
+ let ex=data.expenses.filter(x=>x.m==m), total=ex.reduce((s,x)=>s+x.amount,0);
+ document.getElementById('homeIncome').textContent=money(inc);document.getElementById('homeExpense').textContent=money(total);
+ document.getElementById('remaining').textContent=money(inc-total); updateAssetMarket();
+ let box=document.getElementById('expenseAnalysis');
+ if(!ex.length){box.innerHTML='<div style="color:var(--muted);font-size:13px">'+(document.documentElement.lang==='en'?'No expenses recorded yet.':'هنوز هزینه‌ای ثبت نشده است.')+'</div>';return}
+ let groups={};ex.forEach(x=>groups[x.type]=(groups[x.type]||0)+x.amount);
+ box.innerHTML=ex.map(x=>`<div class="expense"><span class="name">${x.name}</span><span class="amount red">${money(x.amount)}</span></div>`).join('')+
+ `<div class="expense"><b>${document.documentElement.lang==='en'?'Total expenses':'جمع هزینه‌ها'}</b><b class="red">${money(total)}</b></div>`;
+}
+function renderExpenses(){let m=document.getElementById('expenseMonth').value;let ex=data.expenses.filter(x=>x.m==m);document.getElementById('expenseList').innerHTML=ex.length?ex.map(x=>`<div class="expense"><span>${x.type} — ${x.name}</span><b class="red">${money(x.amount)}</b></div>`).join(''):'<span style="color:var(--muted);font-size:13px">هزینه‌ای برای این ماه ثبت نشده.</span>'}
+function showPage(id,btn){const target=document.getElementById(id);if(!target)return;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));target.classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));if(btn)btn.classList.add('active');updateHome();renderExpenses();if(id==='tools')calculateGoldValue()}
+function openSettings(){showPage('settings')}
+function toggleExtra(){showPage('extra')}
+function setTheme(v){
+ const allowed=['blue','green','luxury','dark','pastel'];if(!allowed.includes(v))v='blue';
+ document.body.classList.remove('blue-theme','pastel','dark','green-theme','luxury-theme');
+ if(v==='blue')document.body.classList.add('blue-theme');
+ if(v==='pastel')document.body.classList.add('pastel');
+ if(v==='dark')document.body.classList.add('dark');
+ if(v==='green')document.body.classList.add('green-theme');
+ if(v==='luxury')document.body.classList.add('luxury-theme');
+ const selector=document.getElementById('theme');if(selector&&selector.value!==v)selector.value=v;
+ try{localStorage.setItem('theme',v)}catch(e){}
+}
+const T={fa:{greetingKicker:'خوش اومدی',welcomeTitle:'خوش اومدی 👋',welcomeText:'برای شروع، اسمت رو بهم بگو تا از این به بعد برنامه با اسم خودت بهت خوشامد بگه.',nameLabel:'نام شما',startBtn:'شروع کنیم',appTitle:'دخل و خرج',subtitle:'مدیریت ساده درآمد و هزینه',remainingLabel:'باقی‌مانده این ماه',balanceNote:'درآمد منهای مجموع هزینه‌ها',incomeLabel:'درآمد',expenseLabel:'هزینه',analysisTitle:'تحلیل هزینه‌ها',monthLabel:'این ماه',incomeTitle:'درآمد ماهانه',monthSelectLabel:'ماه',incomeAmountLabel:'مبلغ درآمد',saveIncomeBtn:'ثبت درآمد',expensesTitle:'هزینه‌ها',expenseMonthLabel:'ماه',billsTitle:'قبوض',billAmountLabel:'مبلغ قبض',saveBillBtn:'ثبت قبض',installmentsTitle:'اقساط',installmentNameLabel:'عنوان قسط',installmentAmountLabel:'مبلغ قسط',saveInstallmentBtn:'ثبت قسط',customTitle:'هزینه سفارشی',customNameLabel:'عنوان هزینه',expenseAmountLabel:'مبلغ',saveExpenseBtn:'ثبت هزینه',settingsTitle:'تنظیمات',languageLabel:'زبان',themeLabel:'تم',themeBlue:'آبی و سفید',themeGreen:'سبز',themeLuxury:'لوکس و سلطنتی',themeDark:'تیره',themePastel:'پاستیلی',extraTitle:'پیشرفته',navHome:'خانه',navIncome:'درآمد',navExpenses:'هزینه‌ها',oilTitle:'قیمت نفت',oilBrent:'نفت برنت',oilNote:'نمایش فقط در صورت وجود نرخ نفت در منبع بازار فعلی.',otherFxTitle:'ارز سایر کشورها',otherFxLoading:'ارزهای موجود در منبع در اینجا نمایش داده می‌شوند.',toolsTitle:'ابزار',toolsSub:'محاسبه‌گرهای کاربردی مالی',goldCalcSub:'محاسبه ارزش طلا',goldCalcTitle:'محاسبه قیمت طلای نو و دست‌دوم',goldCalcDesc:'نرخ هر گرم طلای ۱۸ عیار از همان داده بازار برنامه خوانده می‌شود.',goldWeightLabel:'وزن طلا (گرم)',goldSootLabel:'سوت (هر ۱۰۰۰ سوت = ۱ گرم)',goldWageLabel:'اجرت ساخت (درصد، برای طلای نو)',calculateBtn:'محاسبه قیمت',goldCalcHint:'وزن را وارد کنید تا قیمت تقریبی طلای نو و دست‌دوم نمایش داده شود.',goldCalcDisclaimer:'برآورد تقریبی است؛ اجرت واقعی، سود فروشنده و مالیات قابل‌اعمال در فاکتور نهایی ممکن است متفاوت باشد.'},en:{greetingKicker:'Welcome back',welcomeTitle:'Welcome 👋',welcomeText:'Tell us your name once, and the app will remember it for your next visits.',nameLabel:'Your name',startBtn:'Get started',appTitle:'Income & Expenses',subtitle:'Simple money management',remainingLabel:'Remaining this month',balanceNote:'Income minus total expenses',incomeLabel:'Income',expenseLabel:'Expenses',analysisTitle:'Expense analysis',monthLabel:'This month',incomeTitle:'Monthly income',monthSelectLabel:'Month',incomeAmountLabel:'Income amount',saveIncomeBtn:'Save income',expensesTitle:'Expenses',expenseMonthLabel:'Month',expenseTypeLabel:'Expense type',customNameLabel:'Expense title',expenseAmountLabel:'Amount',saveExpenseBtn:'Save expense',settingsTitle:'Settings',languageLabel:'Language',themeLabel:'Theme',themeBlue:'Blue & White',themeGreen:'Green',themeLuxury:'Luxury Royale',themeDark:'Dark',themePastel:'Pastel',extraTitle:'Advanced',navHome:'Home',navIncome:'Income',navExpenses:'Expenses',oilTitle:'Oil prices',oilBrent:'Brent crude oil',oilNote:'Shown only if an oil quote is available from the current market source.',otherFxTitle:'Other currencies',otherFxLoading:'Currencies available from the source will appear here.',toolsTitle:'Tools',toolsSub:'Useful financial calculators',goldCalcSub:'Gold value calculator',goldCalcTitle:'New and second-hand gold calculator',goldCalcDesc:'Uses the app’s existing 18K gold market rate.',goldWeightLabel:'Gold weight (grams)',goldSootLabel:'Soot (1,000 soot = 1 gram)',goldWageLabel:'Making charge (%, new gold)',calculateBtn:'Calculate price',goldCalcHint:'Enter a weight to estimate new and second-hand gold prices.',goldCalcDisclaimer:'Estimate only. Actual making charges, seller profit and applicable tax may differ on the final invoice.'}};
+
+function setLanguage(lang){
+ document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';
+ Object.entries(T[lang]).forEach(([id,text])=>{let el=document.getElementById(id);if(el)el.textContent=text});
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[lang][k])el.textContent=T[lang][k]});
+ const titleMap=lang==='en'?{gold:'Gold & coins',dollar:'Free-market USD',crypto:'Live cryptocurrency prices',oil:'Oil prices',otherfx:'Other currencies'}:{gold:'قیمت طلا و سکه',dollar:'قیمت دلار آزاد',crypto:'قیمت لحظه‌ای ارز دیجیتال',oil:'قیمت نفت',otherfx:'ارز سایر کشورها'};document.querySelectorAll('[data-market-section]').forEach(card=>{const key=card.dataset.marketSection,b=card.querySelector('.market-collapse-title b');if(b&&titleMap[key])b.textContent=titleMap[key]});
+ const sub=document.querySelector('#marketPulse .section-title span');if(sub)sub.textContent=lang==='en'?'Gold, coins, currencies and crypto':'طلا، سکه، دلار و ارز دیجیتال';
+ let f=document.getElementById('incomeMonth'),e=document.getElementById('expenseMonth');
+ [f,e].filter(Boolean).forEach(sel=>{[...sel.options].forEach((o,i)=>{if(typeof monthsFA!=='undefined'&&typeof monthsEN!=='undefined')o.textContent=lang==='fa'?monthsFA[i]:monthsEN[i]})});
+ const billLabels=lang==='en'?{'قبض آب':'💧 Water bill','قبض برق':'⚡ Electricity bill','قبض گاز':'🔥 Gas bill','قبض اینترنت':'🌐 Internet bill','قبض تلفن':'☎️ Phone bill','قبض موبایل':'📱 Mobile bill'}:{'قبض آب':'💧 قبض آب','قبض برق':'⚡ قبض برق','قبض گاز':'🔥 قبض گاز','قبض اینترنت':'🌐 قبض اینترنت','قبض تلفن':'☎️ قبض تلفن','قبض موبایل':'📱 قبض موبایل'};
+ document.querySelectorAll('.cat').forEach(el=>{const x=el.dataset.type;if(billLabels[x])el.textContent=billLabels[x]});
+ try{localStorage.setItem('polito_language',lang)}catch(e){}
+ if(window._freshMarketData&&typeof renderMarketData==='function')renderMarketData(window._freshMarketData,'');if(window._lastMarketPayload)renderOilFromSource(window._lastMarketPayload,window._freshMarketData?.dollar);
+ if(window._lastCryptoValues&&typeof renderCryptoPrices==='function')renderCryptoPrices(window._lastCryptoValues,document.getElementById('cryptoUpdate')?.textContent||'');
+ calculateGoldValue();updateGreeting();updateHome();renderExpenses();
+}
+document.getElementById('incomeMonth').addEventListener('change',function(){
+  document.getElementById('expenseMonth').value=this.value;
+  saveSelectedDate(); updateHome(); renderExpenses();
+});
+document.getElementById('expenseMonth').addEventListener('change',function(){
+  document.getElementById('incomeMonth').value=this.value;
+  saveSelectedDate(); updateHome(); renderExpenses();
+});
+document.getElementById('incomeYear').addEventListener('change',function(){
+  document.getElementById('expenseYear').value=this.value;
+  saveSelectedDate(); updateHome(); renderExpenses();
+});
+document.getElementById('expenseYear').addEventListener('change',function(){
+  document.getElementById('incomeYear').value=this.value;
+  saveSelectedDate(); updateHome(); renderExpenses();
+});
+let savedTheme='blue';try{savedTheme=localStorage.getItem('theme')||'blue';if(!localStorage.getItem('polito_theme_migration_v13')){if(savedTheme==='green')savedTheme='blue';localStorage.setItem('polito_theme_migration_v13','1');}}catch(e){};if(!['blue','green','luxury','dark','pastel'].includes(savedTheme))savedTheme='blue';
+document.getElementById('theme').value=savedTheme;
+setTheme(savedTheme);
+updateHome();renderExpenses();updateGreeting();updateTodayDate();showWelcome();
+</script>
+
+
+<script id="polito-compact-datetime">
+(function(){
+  const months=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  const weekdays=['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+  function faNum(v){return String(v).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d])}
+  function update(){
+    const d=new Date(), j=g2j(d.getFullYear(),d.getMonth()+1,d.getDate());
+    const date=document.getElementById('politoCompactDate');
+    const clock=document.getElementById('politoCompactClock');
+    if(date) date.textContent=weekdays[d.getDay()]+'، '+faNum(j[2])+' '+months[j[1]-1]+' '+faNum(j[0]);
+    if(clock) clock.textContent=faNum([d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':'));
+  }
+  update(); setInterval(update,1000);
+})();
+</script>
+
+
+<script id="polito-gold-prices">
+/* Live market display: gold/dollar use the real source pages inside WebView.
+   Crypto uses Coinbase's public spot-price API + public market WebSocket fallback. */
+let goldRefreshTimer=null, cryptoRefreshTimer=null, cryptoSocket=null, cryptoSocketRetry=null;
+const GOLD_CACHE_KEY='polito_gold_cache_v9';
+const MARKET_COLLAPSE_KEY='polito_market_collapse_v1';
+const GOLD_PAGE='https://www.tgju.org/profile/geram18';
+const LOCAL_MARKET_PAGE='https://www.tgju.org/local-markets';
+const DOLLAR_PAGE='https://www.tgju.org/profile/price_dollar_rl';
+// Emergency bootstrap values: only used when there is no saved price yet.
+// They make the UI usable immediately; live sources replace them as soon as they respond.
+const BOOTSTRAP_MARKET={gold18:0,dollar:0,coinEmami:0,coinBahar:0,coinHalf:0,coinQuarter:0,coinGram:0};
+const BOOTSTRAP_CRYPTO={bitcoin:77899.45,ethereum:2512.46,solana:101.30,xrp:1.40,dogecoin:0.08498,cardano:0.2079,avalanche:7.40,chainlink:11.50,tether:0.9995};
+const CRYPTO_ASSETS=[
+  ['bitcoin','BTC','بیت‌کوین'],
+  ['ethereum','ETH','اتریوم'],
+  ['solana','SOL','سولانا'],
+  ['xrp','XRP','ریپل'],
+  ['dogecoin','DOGE','دوج‌کوین'],
+  ['cardano','ADA','کاردانو'],
+  ['avalanche','AVAX','آوالانچ'],
+  ['chainlink','LINK','چین‌لینک'],
+  ['tether','USDT','تتر']
+];
+const CRYPTO_PRODUCT_MAP={bitcoin:'BTC-USD',ethereum:'ETH-USD',solana:'SOL-USD',xrp:'XRP-USD',dogecoin:'DOGE-USD',cardano:'ADA-USD',avalanche:'AVAX-USD',chainlink:'LINK-USD',tether:'USDT-USD'};
+const CRYPTO_NAMES=Object.fromEntries(CRYPTO_ASSETS.map(x=>[x[0],x]));
+
+function marketCard(title,value,sub=''){
+  return '<div class="market-mini-card"><div class="market-mini-title">'+title+'</div><div class="market-mini-value">'+(value||'در حال دریافت...')+'</div><div class="market-mini-sub">'+sub+'</div></div>';
+}
+function marketNum(v){return Number(v||0).toLocaleString('fa-IR');}
+function marketCacheGet(){try{return JSON.parse(localStorage.getItem('polito_market_data_v3')||'{}')||{}}catch(e){return {}}}
+function marketCacheSet(d){try{localStorage.setItem('polito_market_data_v3',JSON.stringify(Object.assign({},d,{at:Date.now()})))}catch(e){}}
+function marketCard(title,value,time){
+  if(!value) return '';
+  return '<div class="market-price-row"><span>'+title+'</span><b>'+marketNum(value)+' <small>تومان'+(time?' • '+time:'')+'</small></b></div>';
+}
+function setMarketStatus(msg){['goldUpdate','dollarUpdate'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=msg;});}
+function marketAgeLabel(at){
+  const age=Math.max(0,Date.now()-Number(at||0));
+  if(!at)return 'زمان دریافت نامشخص';
+  if(age<60000)return 'همین الان';
+  if(age<3600000)return Math.floor(age/60000)+' دقیقه پیش';
+  return Math.floor(age/3600000)+' ساعت پیش';
+}
+function showCachedMarketStatus(){
+  const c=marketCacheGet();
+  if(c&&c.receivedAt){
+    const label='قیمت ذخیره‌شده (ممکن است قدیمی باشد): '+marketAgeLabel(c.receivedAt)+' • تلاش برای اتصال مجدد...';
+    setMarketStatus(label);
+  }else setMarketStatus('در حال اتصال به منبع قیمت...');
+}
+function extractNumber(text){
+  // Normalize Persian/Arabic digits and common separators before parsing.
+  const n=String(text||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٬،]/g,'').replace(/,/g,'').replace(/٫/g,'.');
+  // Prefer explicit price/value fields; ignore years, dates and unrelated small numbers.
+  const ms=n.match(/\d{4,15}(?:\.\d+)?/g)||[];
+  for(const x of ms){const v=Number(x);if(Number.isFinite(v)&&v>1000&&v<100000000000)return v;}
+  return 0;
+}
+function extractSnippetPrices(root){
+  const out={};
+  const specs={
+    geram18:{keys:['geram18'],labels:['طلای 18 عیار','طلای ۱۸ عیار','گرم طلای 18','گرم طلای ۱۸']},
+    geram24:{keys:['geram24'],labels:['طلای 24 عیار','طلای ۲۴ عیار','گرم طلای 24','گرم طلای ۲۴']},
+    silver_999:{keys:['silver_999'],labels:['گرم نقره 999','گرم نقره ۹۹۹','نقره 999','نقره ۹۹۹']},
+    silver_925:{keys:['silver_925'],labels:['گرم نقره 925','گرم نقره ۹۲۵','نقره 925','نقره ۹۲۵']},
+    basemetal_london_copper:{keys:['basemetal-london-copper'],labels:['مس','Copper']},
+    mesghal:{keys:['mesghal'],labels:['مثقال طلا','مثقال']},
+    sekee:{keys:['sekee'],labels:['سکه امامی','تمام سکه - امامی']},
+    sekeb:{keys:['sekeb'],labels:['سکه بهار آزادی','تمام سکه - بهار آزادی']},
+    nim:{keys:['nim'],labels:['نیم سکه']},
+    rob:{keys:['rob'],labels:['ربع سکه']},
+    gerami:{keys:['gerami'],labels:['سکه گرمی']},
+    price_dollar_rl:{keys:['price_dollar_rl'],labels:['دلار آزاد','دلار']}
+  };
+  const all=[...root.querySelectorAll('*')];
+  function grab(el){
+    let cur=el;
+    for(let level=0;cur&&level<3;level++,cur=cur.parentElement){
+      const v=extractNumber(cur.textContent);if(v)return v;
+    }
+    return 0;
+  }
+  for(const [key,spec] of Object.entries(specs)){
+    // First choice: an element explicitly carrying the TGJU symbol.
+    for(const sel of ['[id*="'+key+'"]','[class*="'+key+'"]','[data-key="'+key+'"]','[data-symbol="'+key+'"]']){
+      const el=root.querySelector(sel);if(el){const v=grab(el);if(v){out[key]=v;break;}}
+    }
+    if(out[key])continue;
+    // Second choice: a compact row containing the exact instrument label.
+    for(const el of all){
+      const txt=(el.textContent||'').trim();if(!txt||txt.length>180)continue;
+      if(spec.labels.some(label=>txt.includes(label))){const v=grab(el);if(v){out[key]=v;break;}}
+    }
+  }
+  return out;
+}
+function applyFreshMarket(prices,source){
+  const r={};Object.keys(prices||{}).forEach(k=>r[k]=Number(prices[k])||0);
+  if(!r.geram18 && !r.geram24 && !r.sekee && !r.price_dollar_rl)return false;
+  const toman=v=>v>100000?Math.round(v/10):Math.round(v);
+  const now=new Date(),time=now.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  // TGJU quotes gold in rial. The most reliable anchor for the two gram prices is
+  // the live mesghal quote; from it we derive 18K (750) and 24K using TGJU's
+  // published relationship instead of trusting a broad DOM text match.
+  const mesghalToman=toman(r.mesghal);
+  const derived18=mesghalToman>0?Math.round(mesghalToman*750/(705*4.608)):0;
+  const derived24=derived18>0?Math.round(derived18*24/18):0;
+  const direct18=toman(r.geram18),direct24=toman(r.geram24);
+  const gold18=derived18||direct18, gold24=derived24||direct24;
+  const dollarToman=toman(r.price_dollar_rl);
+  // TGJU's London copper quote is USD per metric ton; convert to تومان per gram.
+  const copperGram=(Number(r.basemetal_london_copper)>0&&dollarToman>0)?Math.round(Number(r.basemetal_london_copper)*dollarToman/1000000):0;
+  const data={gold18,gold24,mesghal:mesghalToman,dollar:dollarToman,silver999:toman(r.silver_999),silver925:toman(r.silver_925),copperGram,coinEmami:toman(r.sekee),coinBahar:toman(r.sekeb),coinHalf:toman(r.nim),coinQuarter:toman(r.rob),coinGram:toman(r.gerami),receivedAt:Date.now(),source};
+  const gold=document.getElementById('goldPrices');
+  if(gold){let html='';html+=marketCard('طلای ۱۸ عیار (هر گرم)',data.gold18,time);html+=marketCard('طلای ۲۴ عیار (هر گرم)',data.gold24,time);html+=marketCard('نقره ۹۹۹ (هر گرم)',data.silver999,time);html+=marketCard('نقره ۹۲۵ (هر گرم)',data.silver925,time);html+=marketCard('مس (هر گرم)',data.copperGram,time);html+=marketCard('مثقال طلا',data.mesghal,time);html+=marketCard('سکه امامی',data.coinEmami,time);html+=marketCard('سکه بهار آزادی',data.coinBahar,time);html+=marketCard('نیم سکه',data.coinHalf,time);html+=marketCard('ربع سکه',data.coinQuarter,time);html+=marketCard('سکه گرمی',data.coinGram,time);gold.innerHTML=html||'<div class="market-price-error">قیمت طلا دریافت نشد</div>';}
+  const dollar=document.getElementById('dollarPrice');if(dollar)dollar.innerHTML=data.dollar?marketCard('دلار آزاد',data.dollar,time):'<div class="market-price-error">قیمت دلار دریافت نشد</div>';
+  setMarketStatus('TGJU • دریافت موفق '+time);marketCacheSet(data);window._freshMarketData=data;
+  if(window.assetMarket){if(data.gold18)assetMarket.gold18=data.gold18;if(data.dollar)assetMarket.dollar=data.dollar;}
+  if(typeof updateAssetMarket==='function')updateAssetMarket();
+  if(typeof renderAssets==='function')renderAssets();
+  return true;
+}
+let tgjuLoadSerial=0,tgjuLoading=false;
+// Primary: NerkhAra's documented, CORS-enabled JSON feed (10-minute cadence).
+// Fallback: Iran Market Data's public JSON feed (30-minute cadence).
+const LIVE_MARKET_URL='https://nerkhara.com/rates.json';
+const PUBLIC_MARKET_URL='https://raw.githubusercontent.com/iran-market/iran-market.github.io/main/data/popular.json';
+const PUBLIC_FULL_MARKET_URL='https://raw.githubusercontent.com/iran-market/iran-market.github.io/main/data/latest-toman.json';
+function normalizeMarketIso(value){
+  if(!value)return '';
+  const s=String(value).trim();
+  // NerkhAra timestamps omit a timezone suffix but are explicitly UTC.
+  return (/Z$|[+-]\d{2}:?\d{2}$/.test(s))?s:(/^\d{4}-\d{2}-\d{2}T/.test(s)?s+'Z':s);
+}
+function formatMarketTime(iso){
+  try{const ms=Date.parse(normalizeMarketIso(iso));if(!Number.isFinite(ms))return '';return new Date(ms).toLocaleString('fa-IR',{timeZone:'Asia/Tehran',hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});}catch(e){return '';}
+}
+async function fetchJsonNoCache(url){
+  const controller=typeof AbortController!=='undefined'?new AbortController():null;
+  const timeout=setTimeout(()=>{if(controller)controller.abort();},10000);
+  try{
+    const response=await fetch(url+(url.includes('?')?'&':'?')+'_polito='+Date.now(),{method:'GET',cache:'no-store',mode:'cors',signal:controller?controller.signal:undefined,headers:{'Accept':'application/json'}});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    return await response.json();
+  }finally{clearTimeout(timeout);}
+}
+function validMarketTimestamp(iso,maxAgeMs=2*60*60*1000){
+  if(!iso)return false;
+  const ms=Date.parse(normalizeMarketIso(iso));
+  return Number.isFinite(ms)&&ms<=Date.now()+5*60*1000&&(Date.now()-ms)<=maxAgeMs;
+}
+function firstPositive(...values){for(const value of values){const n=Number(value);if(Number.isFinite(n)&&n>0)return Math.round(n);}return 0;}
+function marketDataFromNerkh(payload){
+  if(!payload||payload.stale===true)throw new Error('NerkhAra feed stale');
+  const usd=payload.usd||payload.fiat?.find?.(x=>x.code==='USD');
+  const gold=Array.isArray(payload.gold)?payload.gold:[];
+  const bySymbol=Object.fromEntries(gold.map(x=>[x.symbol,x]));
+  const timestamp=payload.generated_utc||usd?.timestamp_utc;
+  if(!validMarketTimestamp(timestamp))throw new Error('NerkhAra timestamp is old or missing');
+  const pick=(...symbols)=>firstPositive(...symbols.map(sym=>bySymbol[sym]?.price));
+  const data={
+    dollar:firstPositive(usd?.price),
+    gold18:pick('GOLD18K_G'), gold24:pick('GOLD24K_G'), mesghal:pick('GOLD_MESGHAL'),
+    coinEmami:pick('COIN_EMAMI'), coinBahar:pick('COIN_BAHAR'), coinHalf:pick('COIN_HALF'),
+    coinQuarter:pick('COIN_QUARTER'), coinGram:pick('COIN_GRAM'), silver999:pick('SILVER999_G'),
+    receivedAt:Date.parse(normalizeMarketIso(timestamp)), source:'NerkhAra', sourceTime:normalizeMarketIso(timestamp)
+  };
+  if(!data.dollar||!data.gold18)throw new Error('NerkhAra required fields missing');
+  return data;
+}
+function marketDataFromIran(payload){
+  if(!payload||payload.meta?.stale===true)throw new Error('Iran Market Data invalid or stale');
+  let rows=[];
+  if(Array.isArray(payload.data)) rows=payload.data;
+  else if(payload.data?.categories&&typeof payload.data.categories==='object') rows=Object.values(payload.data.categories).flat().filter(Boolean);
+  if(!rows.length)throw new Error('Iran Market Data has no rows');
+  const bySymbol=Object.fromEntries(rows.map(x=>[x.symbol,x]));
+  const usable=(x)=>!!x&&x.stale!==true&&firstPositive(x.price)>0&&validMarketTimestamp(x.timestamp||payload.meta?.updated_at||payload.data?.generated_at);
+  const get=(...symbols)=>{for(const sym of symbols){const x=bySymbol[sym];if(usable(x))return firstPositive(x.price);}return 0;};
+  const usd=bySymbol.USD_IRR_FREE,gold=bySymbol.GOLD_18K_IRR;
+  if(!usable(usd)||!usable(gold))throw new Error('Iran Market Data required fields missing/stale');
+  const stamp=gold.timestamp||usd.timestamp||payload.meta?.updated_at||payload.data?.generated_at;
+  const data={
+    dollar:firstPositive(usd.price), gold18:firstPositive(gold.price),
+    gold24:get('GOLD_24K_IRR')||Math.round(Number(gold.price)*4/3), mesghal:get('GOLD_MESGHAL_IRR'),
+    coinEmami:get('COIN_EMAMI_IRR','COIN_EMAMI_RETAIL_IRR'),
+    coinBahar:get('COIN_BAHAR_IRR','COIN_BAHAR_RETAIL_IRR'),
+    coinHalf:get('COIN_HALF_IRR'), coinQuarter:get('COIN_QUARTER_IRR'),
+    coinGram:get('COIN_GRAMI_IRR','COIN_GRAM_IRR'), silver999:get('SILVER_999_IRR'),
+    receivedAt:Date.parse(normalizeMarketIso(stamp)), source:'Iran Market Data', sourceTime:normalizeMarketIso(stamp)
+  };
+  if(!data.dollar||!data.gold18)throw new Error('Iran Market Data has no valid prices');
+  return data;
+}
+function renderMarketData(data, statusPrefix='منبع'){
+  const displayTime=formatMarketTime(data.sourceTime)||marketAgeLabel(data.receivedAt);
+  const en=currentUiLang()==='en';const rows=[
+    [en?'18K gold (per gram)':'طلای ۱۸ عیار (هر گرم)',data.gold18],[en?'24K gold (per gram)':'طلای ۲۴ عیار (هر گرم)',data.gold24],
+    [en?'999 silver (per gram)':'نقره ۹۹۹ (هر گرم)',data.silver999],[en?'Gold mesghal':'مثقال طلا',data.mesghal],[en?'Emami coin':'سکه امامی',data.coinEmami],
+    [en?'Bahar Azadi coin':'سکه بهار آزادی',data.coinBahar],[en?'Half coin':'نیم سکه',data.coinHalf],[en?'Quarter coin':'ربع سکه',data.coinQuarter],[en?'Gram coin':'سکه گرمی',data.coinGram]
+  ];
+  const goldBox=document.getElementById('goldPrices');
+  if(goldBox){const html=rows.map(([label,value])=>marketCard(label,value,displayTime)).filter(Boolean).join('');goldBox.innerHTML=html||'<div class="market-price-error">قیمت طلا دریافت نشد</div>';}
+  const dollarBox=document.getElementById('dollarPrice');
+  if(dollarBox)dollarBox.innerHTML=marketCard(currentUiLang()==='en'?'Free-market USD':'دلار آزاد',data.dollar,displayTime)||'<div class="market-price-error">قیمت دلار دریافت نشد</div>';
+  const status=(data.receivedAt&&Date.now()-data.receivedAt>45*60*1000?'⚠ داده نسبتاً قدیمی • ':'')+statusPrefix+': '+data.source+' • زمان داده: '+displayTime+' • تلاش برای بروزرسانی هر ۶۰ ثانیه';
+  setMarketStatus(status);marketCacheSet(data);window._freshMarketData=data;
+  if(window.assetMarket){if(data.gold18)assetMarket.gold18=data.gold18;if(data.dollar){assetMarket.dollar=data.dollar;assetMarket.usdt=data.dollar;}}
+  try{if(data.dollar)localStorage.setItem('polito_dollar_toman_cache',String(data.dollar));}catch(e){}
+  if(typeof updateAssetMarket==='function')updateAssetMarket();
+  if(typeof renderAssets==='function')renderAssets();
+}
+function currentUiLang(){return document.documentElement.lang==='en'?'en':'fa';}
+function calculateGoldValue(){
+ const grams=Math.max(0,Number(document.getElementById('goldCalcGrams')?.value)||0),soot=Math.min(999,Math.max(0,Number(document.getElementById('goldCalcSoot')?.value)||0)),wagePct=Math.max(0,Number(document.getElementById('goldCalcWage')?.value)||0);
+ const weight=grams+soot/1000,rate=Number(window._freshMarketData?.gold18)||Number(marketCacheGet()?.gold18)||0,lang=currentUiLang();
+ const rateEl=document.getElementById('goldCalcRate'),out=document.getElementById('goldCalcResult');if(!out)return;
+ if(rateEl)rateEl.textContent=rate?(lang==='en'?'Live 18K rate: ':'نرخ طلای ۱۸ عیار: ')+marketNum(rate)+' '+(lang==='en'?'Toman/gram':'تومان/گرم'):(lang==='en'?'Waiting for live gold rate':'در انتظار نرخ زنده طلا');
+ if(!weight||!rate){out.textContent=lang==='en'?'Enter a weight and wait for the market rate.':'وزن را وارد کنید و منتظر دریافت نرخ بازار بمانید.';return;}
+ const base=weight*rate,profit=base*.07,wage=base*wagePct/100;
+ // Second-hand estimate: base + 7% seller profit; new gold: base + making charge + 7% profit, then 9% tax on charge/profit only.
+ const used=base+profit,newTotal=base+wage+profit+(wage+profit)*.09,fmt=n=>Math.round(n).toLocaleString(lang==='en'?'en-US':'fa-IR');
+ out.innerHTML=(lang==='en'?'<div>Weight: <strong>'+weight.toFixed(3)+' g</strong></div><div>Gold base value: <strong>'+fmt(base)+' Toman</strong></div><div>Estimated second-hand gold: <strong>'+fmt(used)+' Toman</strong></div><div>Estimated new gold: <strong>'+fmt(newTotal)+' Toman</strong></div><small>Assumptions: 7% seller profit, user-entered making charge, 9% tax on profit and making charge.</small>':'<div>وزن کل: <strong>'+weight.toFixed(3)+' گرم</strong></div><div>ارزش پایه طلا: <strong>'+fmt(base)+' تومان</strong></div><div>طلای دست‌دوم (تقریبی): <strong>'+fmt(used)+' تومان</strong></div><div>طلای نو (تقریبی): <strong>'+fmt(newTotal)+' تومان</strong></div><small>فرض محاسبه: ۷٪ سود فروشنده، اجرت واردشده توسط کاربر و ۹٪ مالیات روی سود و اجرت.</small>');
+}
+function renderOtherCurrencies(payload){
+ const box=document.getElementById('otherFxPrices');if(!box)return;const lang=currentUiLang();
+ const items=Array.isArray(payload?.fiat)?payload.fiat:[];const names={EUR:lang==='en'?'Euro':'یورو',GBP:lang==='en'?'British pound':'پوند انگلیس',AED:lang==='en'?'UAE dirham':'درهم امارات',TRY:lang==='en'?'Turkish lira':'لیر ترکیه',CNY:lang==='en'?'Chinese yuan':'یوآن چین',CAD:lang==='en'?'Canadian dollar':'دلار کانادا',CHF:lang==='en'?'Swiss franc':'فرانک سوئیس',AUD:lang==='en'?'Australian dollar':'دلار استرالیا',RUB:lang==='en'?'Russian ruble':'روبل روسیه',JPY:lang==='en'?'Japanese yen':'ین ژاپن'};
+ const rows=items.filter(x=>x&&x.code&&x.code!=='USD'&&Number(x.price)>0).map(x=>({code:String(x.code).toUpperCase(),price:Number(x.price)})).filter(x=>names[x.code]);
+ box.innerHTML=rows.length?rows.map(x=>marketCard(names[x.code]+' ('+x.code+')',x.price,'')).join(''):'<div class="market-price-error">'+(lang==='en'?'No additional fiat currencies were provided by the current source.':'منبع فعلی نرخ ارز دیگری ارائه نکرده است.')+'</div>';
+ const stamp=document.getElementById('otherFxUpdate');if(stamp)stamp.textContent=rows.length?(lang==='en'?'Source updated':'از منبع بازار'):(lang==='en'?'No source data':'داده‌ای در منبع نیست');
+}
+function findOilQuote(payload){
+ const candidates=[];const seen=new Set();
+ function walk(value,keyHint=''){
+  if(!value||typeof value!=='object'||seen.has(value))return;seen.add(value);
+  if(Array.isArray(value)){value.forEach((v)=>walk(v,keyHint));return;}
+  const symbol=String(value.symbol||value.code||value.name||value.title||value.asset||value.id||keyHint||'');
+  const price=Number(value.price??value.price_usd??value.priceUsd??value.usd_price??value.usdPrice??value.value_usd??value.value??value.rate??value.close??value.last??value.last_price);
+  if(/brent|crude|wti|oil|نفت|پترول/i.test(symbol)&&price>0)candidates.push({symbol,price,currency:String(value.currency||value.unit||value.quote_currency||value.quoteCurrency||'USD').toUpperCase()});
+  Object.entries(value).forEach(([k,v])=>{if(v&&typeof v==='object')walk(v,k);else if(/brent|crude|wti|oil|نفت/i.test(k)&&Number(v)>0)candidates.push({symbol:k,price:Number(v),currency:'USD'});});
+ }
+ walk(payload);return candidates.find(x=>/brent/i.test(x.symbol))||candidates.find(x=>/wti/i.test(x.symbol))||candidates[0]||null;
+}
+function renderOilFromSource(payload,dollarRate){
+ const box=document.getElementById('oilPrice');if(!box)return;const lang=currentUiLang();const match=findOilQuote(payload);
+ if(!match){box.innerHTML='<div class="market-price-error">'+(lang==='en'?'No usable oil quote was found in the current market source.':'در منبع فعلی نرخ قابل‌استفاده‌ای برای نفت پیدا نشد.')+'</div>';const stamp=document.getElementById('oilUpdate');if(stamp)stamp.textContent=lang==='en'?'Unavailable in source':'در منبع موجود نیست';return;}
+ const usdPrice=/USD|US\$|\$|دلار/i.test(match.currency)||/USD|\$/.test(match.symbol);
+ const tomanPrice=usdPrice&&Number(dollarRate)>0?match.price*Number(dollarRate):(!usdPrice?match.price:0);
+ const title=/wti/i.test(match.symbol)?(lang==='en'?'WTI crude oil':'نفت خام WTI'):(lang==='en'?'Brent crude oil':'نفت برنت');
+ const fmt=n=>Math.round(n).toLocaleString(lang==='en'?'en-US':'fa-IR');
+ const rows=[];
+ if(usdPrice)rows.push('<div class="market-price-row"><span>'+title+' ('+(lang==='en'?'USD/barrel':'دلار/بشکه')+')</span><b dir="ltr">$'+Number(match.price).toLocaleString('en-US',{maximumFractionDigits:2})+'</b></div>');
+ if(tomanPrice>0)rows.push('<div class="market-price-row"><span>'+title+' ('+(lang==='en'?'Toman/barrel':'تومان/بشکه')+')</span><b>'+fmt(tomanPrice)+' <small>'+(lang==='en'?'Toman':'تومان')+'</small></b></div>');
+ if(!rows.length)rows.push('<div class="market-price-row"><span>'+title+'</span><b>'+fmt(match.price)+' '+match.currency+'</b></div>');
+ if(usdPrice&&!(Number(dollarRate)>0))rows.push('<div class="market-live-note">'+(lang==='en'?'Waiting for the existing free-market USD/Toman rate to calculate the Toman value.':'برای محاسبه قیمت تومانی، در انتظار نرخ دلار آزاد برنامه هستیم.')+'</div>');
+ box.innerHTML=rows.join('');const stamp=document.getElementById('oilUpdate');if(stamp)stamp.textContent=lang==='en'?'Source quote converted with market USD rate':'نرخ منبع × دلار آزاد برنامه';
+}
+
+async function loadTgjuSnippet(){
+  if(tgjuLoading)return;
+  tgjuLoading=true;
+  setMarketStatus('در حال دریافت قیمت بازار...');
+  try{
+    let data;
+    try{const livePayload=await fetchJsonNoCache(LIVE_MARKET_URL);window._lastMarketPayload=livePayload;renderOtherCurrencies(livePayload);data=marketDataFromNerkh(livePayload);}
+    catch(primaryError){
+      console.warn('Primary market source unavailable; trying fallback:',primaryError&&primaryError.message?primaryError.message:primaryError);
+      const fallbackPayload=await fetchJsonNoCache(PUBLIC_MARKET_URL);window._lastMarketPayload=fallbackPayload;
+      renderOtherCurrencies(fallbackPayload);
+      data=marketDataFromIran(fallbackPayload);
+      // The compact public file has only a few popular symbols. If coin quotes are absent,
+      // optionally enrich them from the full public feed; failure here does not discard USD/gold.
+      if(!data.coinBahar||!data.coinHalf||!data.coinQuarter||!data.coinGram){
+        try{
+          const full=marketDataFromIran(await fetchJsonNoCache(PUBLIC_FULL_MARKET_URL));
+          ['coinEmami','coinBahar','coinHalf','coinQuarter','coinGram','mesghal','gold24','silver999'].forEach(k=>{if(!data[k]&&full[k])data[k]=full[k];});
+        }catch(enrichError){console.warn('Optional coin enrichment unavailable:',enrichError&&enrichError.message?enrichError.message:enrichError);}
+      }
+    }
+    renderMarketData(data,'اتصال موفق');renderOilFromSource(window._lastMarketPayload,data.dollar);
+  }catch(err){
+    const c=marketCacheGet();
+    if(c&&Number(c.gold18)>0&&Number(c.dollar)>0){
+      renderMarketData(c,'⚠ اتصال ناموفق؛ آخرین داده ذخیره‌شده');
+      setMarketStatus('⚠ اتصال ناموفق • آخرین داده '+marketAgeLabel(c.receivedAt)+' • قیمت زنده تأیید نشد؛ تلاش مجدد ادامه دارد');
+    }else setMarketStatus('اتصال به منابع قیمت برقرار نشد • اینترنت یا دسترسی منبع را بررسی کنید');
+    console.warn('Market price refresh failed:',err&&err.message?err.message:err);
+  }finally{tgjuLoading=false;}
+}
+
+function loadCachedMarket(){
+  const c=marketCacheGet();
+  if(c&&Number(c.gold18)>0&&Number(c.dollar)>0){
+    if(window.assetMarket){assetMarket.gold18=Number(c.gold18);assetMarket.dollar=Number(c.dollar);assetMarket.usdt=Number(c.dollar);}
+    renderMarketData(c,'⚠ آخرین داده ذخیره‌شده؛ در انتظار تأیید زنده');
+    setMarketStatus('⚠ قیمت ذخیره‌شده • '+marketAgeLabel(c.receivedAt)+' • در انتظار اتصال مجدد');
+  }else showCachedMarketStatus();
+  if(typeof updateAssetMarket==='function')updateAssetMarket();
+}
+async function refreshMarketData(){loadTgjuSnippet();}
+function loadGoldPrices(){refreshMarketData();}
+function loadDollarPrice(){refreshMarketData();}
+function toggleMarketSection(key){
+  const card=document.querySelector('[data-market-section="'+key+'"]');
+  if(!card)return;
+  const collapsed=card.classList.toggle('is-collapsed');
+  const head=card.querySelector('.market-collapse-head');
+  if(head)head.setAttribute('aria-expanded',String(!collapsed));
+  let state={};
+  try{state=JSON.parse(localStorage.getItem(MARKET_COLLAPSE_KEY)||'{}')||{}}catch(e){}
+  state[key]=collapsed;
+  try{localStorage.setItem(MARKET_COLLAPSE_KEY,JSON.stringify(state))}catch(e){}
+}
+function restoreMarketCollapse(){
+  let state={};
+  try{state=JSON.parse(localStorage.getItem(MARKET_COLLAPSE_KEY)||'{}')||{}}catch(e){}
+  Object.keys(state).forEach(key=>{
+    const card=document.querySelector('[data-market-section="'+key+'"]');
+    if(!card)return;
+    const collapsed=!!state[key];
+    card.classList.toggle('is-collapsed',collapsed);
+    const head=card.querySelector('.market-collapse-head');
+    if(head)head.setAttribute('aria-expanded',String(!collapsed));
+  });
+}
+
+function cryptoFmt(n){
+  const v=Number(n);
+  if(!Number.isFinite(v))return '—';
+  if(v>=1000)return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(v>=1)return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(v>=0.01)return v.toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
+  return v.toLocaleString('en-US',{minimumFractionDigits:5,maximumFractionDigits:8});
+}
+function renderCryptoPrices(values,stampText){
+  window._lastCryptoValues=Object.assign({},values||{});
+  const box=document.getElementById('cryptoPrices'),stamp=document.getElementById('cryptoUpdate');
+  if(!box)return;
+  const dollarToman=Number(window.assetMarket?.dollar)||Number(localStorage.getItem('polito_dollar_toman_cache')||0)||0;
+  if(window.assetMarket){
+    if(Number.isFinite(Number(values?.bitcoin))) window.assetMarket.bitcoin=Number(values.bitcoin);
+    if(Number.isFinite(Number(values?.tether)) && Number(values.tether)>0 && !window.assetMarket.usdt) window.assetMarket.usdt=Number(values.tether)*dollarToman;
+  }
+  box.innerHTML=CRYPTO_ASSETS.map(([id,symbol,name])=>{
+    const value=Number(values[id]);
+    const toman=dollarToman&&Number.isFinite(value)?value*dollarToman:0;
+    const tomanText=toman>0?'≈ '+assetMoney(toman):'در انتظار نرخ دلار';
+    return '<div class="crypto-row"><div class="crypto-name"><span class="crypto-symbol">'+symbol+'</span><div><div class="crypto-label">'+name+'</div><span class="crypto-code">'+(id==='tether'?'USDT':' '+symbol)+'</span></div></div><div class="crypto-price"><span>'+(Number.isFinite(value)?'$ '+cryptoFmt(value):'—')+'</span><span class="crypto-toman-inline">'+tomanText+'</span></div></div>';
+  }).join('');
+  if(stamp)stamp.textContent=stampText||'قیمت جهانی • در حال بروزرسانی';
+  if(typeof updateAssetMarket==='function') updateAssetMarket();
+}
+async function fetchCryptoPricesCoinGecko(){
+  const ids=CRYPTO_ASSETS.map(x=>x[0]).join(',');
+  const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+encodeURIComponent(ids)+'&vs_currencies=usd&include_24hr_change=true&x='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('CoinGecko HTTP '+r.status);
+  const j=await r.json(),values={};
+  CRYPTO_ASSETS.forEach(([id])=>{const v=Number(j?.[id]?.usd);if(Number.isFinite(v))values[id]=v});
+  if(!Object.keys(values).length)throw new Error('CoinGecko empty');
+  return values;
+}
+async function fetchCryptoPricesBinance(){
+  const symbols=CRYPTO_ASSETS.map(x=>x[1]+'USDT');
+  const r=await fetch('https://api.binance.com/api/v3/ticker/price?symbols='+encodeURIComponent(JSON.stringify(symbols))+'&x='+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw new Error('Binance HTTP '+r.status);
+  const arr=await r.json(),values={};
+  arr.forEach(item=>{const asset=CRYPTO_ASSETS.find(x=>x[1]+'USDT'===String(item.symbol||''));const v=Number(item.price);if(asset&&Number.isFinite(v))values[asset[0]]=v});
+  if(!Object.keys(values).length)throw new Error('Binance empty');
+  return values;
+}
+async function fetchCryptoPricesCoinbase(){
+  const values={};
+  await Promise.all(CRYPTO_ASSETS.map(async([id])=>{try{const r=await fetch('https://api.coinbase.com/v2/prices/'+CRYPTO_PRODUCT_MAP[id]+'/spot?cb='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json();const v=Number(j?.data?.amount);if(Number.isFinite(v))values[id]=v}catch(e){}}));
+  if(!Object.keys(values).length)throw new Error('Coinbase empty');
+  return values;
+}
+async function loadCryptoPrices(){
+  const stamp=document.getElementById('cryptoUpdate');
+  let cached={};try{cached=JSON.parse(localStorage.getItem('polito_crypto_cache_v2')||'{}')||{}}catch(e){}
+  const initial=Object.assign({},BOOTSTRAP_CRYPTO,cached.values||{});
+  renderCryptoPrices(initial,cached.values?'آخرین قیمت ذخیره‌شده • بروزرسانی':'قیمت اولیه • بروزرسانی');
+  let values=null,source='';
+  const attempts=[['CoinGecko',fetchCryptoPricesCoinGecko],['Binance',fetchCryptoPricesBinance],['Coinbase',fetchCryptoPricesCoinbase]];
+  for(const [name,fn] of attempts){try{values=await fn();if(values&&Object.keys(values).length){source=name;break}}catch(e){}}
+  if(values){const merged=Object.assign({},initial,values);renderCryptoPrices(merged,'قیمت جهانی از '+source+' • زنده');try{localStorage.setItem('polito_crypto_cache_v2',JSON.stringify({values:merged,at:Date.now(),source}))}catch(e){}}
+  else if(stamp)stamp.textContent='آخرین قیمت موجود • تلاش خودکار برای بروزرسانی';
+  updateAssetMarket();
+}
+function connectCryptoSocket(){
+  if(cryptoSocket)try{cryptoSocket.close()}catch(e){}
+  try{cryptoSocket=new WebSocket('wss://advanced-trade-ws.coinbase.com');cryptoSocket.onopen=()=>{cryptoSocket.send(JSON.stringify({type:'subscribe',product_ids:CRYPTO_ASSETS.map(x=>CRYPTO_PRODUCT_MAP[x[0]]),channel:'ticker'}))};cryptoSocket.onmessage=(ev)=>{try{const m=JSON.parse(ev.data),events=m.events||[],values={};events.forEach(e=>(e.tickers||[]).forEach(t=>{const id=Object.keys(CRYPTO_PRODUCT_MAP).find(k=>CRYPTO_PRODUCT_MAP[k]===t.product_id),v=Number(t.price);if(id&&Number.isFinite(v))values[id]=v}));if(Object.keys(values).length){let old={};try{old=JSON.parse(localStorage.getItem('polito_crypto_cache_v2')||'{}')||{}}catch(e){};const merged=Object.assign({},old.values||{},values);renderCryptoPrices(merged,'قیمت لحظه‌ای زنده • Coinbase');try{localStorage.setItem('polito_crypto_cache_v2',JSON.stringify({values:merged,at:Date.now(),source:'Coinbase WebSocket'}))}catch(e){}}}catch(e){}};cryptoSocket.onerror=()=>{try{cryptoSocket.close()}catch(e){}};cryptoSocket.onclose=()=>{clearTimeout(cryptoSocketRetry);cryptoSocketRetry=setTimeout(connectCryptoSocket,10000)}}catch(e){clearTimeout(cryptoSocketRetry);cryptoSocketRetry=setTimeout(connectCryptoSocket,10000)}}
+function refreshMarketFrames(){loadGoldPrices(true);loadDollarPrice(true)}
+function startGoldAutoRefresh(){
+  restoreMarketCollapse();
+  loadCachedMarket();
+  if(goldRefreshTimer)clearInterval(goldRefreshTimer);
+  refreshMarketData();
+  goldRefreshTimer=setInterval(refreshMarketData,60000);
+  loadCryptoPrices();
+  if(cryptoRefreshTimer)clearInterval(cryptoRefreshTimer);
+  cryptoRefreshTimer=setInterval(loadCryptoPrices,15000);
+  connectCryptoSocket();
+}
+document.addEventListener('DOMContentLoaded',startGoldAutoRefresh);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshMarketData();});
+window.addEventListener('online',()=>refreshMarketData());
+
+
+/* Personal assets: quantities are saved locally; values are recalculated from live market prices. */
+const ASSET_KEY='polito_assets_v1';
+let selectedAssetType='gold';
+window.assetMarket={gold18:BOOTSTRAP_MARKET.gold18,dollar:BOOTSTRAP_MARKET.dollar,bitcoin:BOOTSTRAP_CRYPTO.bitcoin,usdt:BOOTSTRAP_MARKET.dollar};
+let assetMarket=window.assetMarket;
+function readAssets(){try{return JSON.parse(localStorage.getItem(ASSET_KEY)||'[]')||[]}catch(e){return []}}
+function writeAssets(a){try{localStorage.setItem(ASSET_KEY,JSON.stringify(a))}catch(e){}}
+function selectAssetType(type){selectedAssetType=type;document.querySelectorAll('.asset-type-tab').forEach(b=>b.classList.toggle('active',b.dataset.assetType===type));const q=document.getElementById('assetQty');if(!q)return;const ph={gold:'مثلاً ۵ گرم',bitcoin:'مثلاً ۰.۲',usdt:'مثلاً ۱۰۰۰',usd:'مثلاً ۲۰۰'};q.placeholder=ph[type]||'مقدار';}
+function assetNum(v){return Number(String(v||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[,٬،]/g,'').replace(/٫/g,'.').trim())}
+function assetMoney(n){if(!Number.isFinite(n))return '—';return Math.round(n).toLocaleString('fa-IR')+' تومان'}
+function assetQtyFmt(n){if(!Number.isFinite(n))return '—';return n.toLocaleString('fa-IR',{maximumFractionDigits:8})}
+function saveAsset(){const q=assetNum(document.getElementById('assetQty')?.value),note=(document.getElementById('assetNote')?.value||'').trim();if(!q||q<=0)return;const names={gold:'طلا ۱۸ عیار',bitcoin:'بیت‌کوین',usdt:'تتر',usd:'دلار'};const arr=readAssets();arr.push({id:Date.now()+Math.random(),type:selectedAssetType,qty:q,note:note||names[selectedAssetType]});writeAssets(arr);primeAssetMarketFromCache();renderAssets();updateAssetMarket();renderAssetsDetail();document.getElementById('assetQty').value='';document.getElementById('assetNote').value='';/* network refresh is intentionally non-blocking */Promise.allSettled([loadCryptoPrices(),refreshMarketData()]);}
+function deleteAsset(id){writeAssets(readAssets().filter(a=>String(a.id)!==String(id)));renderAssets();renderAssetsDetail()}
+function renderAssets(){const box=document.getElementById('assetList');if(!box)return;const arr=readAssets();if(!arr.length){box.innerHTML='<div style="color:var(--muted);font-size:13px">هنوز دارایی ثبت نشده است.</div>';return}const names={gold:'طلا ۱۸ عیار',bitcoin:'بیت‌کوین',usdt:'تتر',usd:'دلار'};box.innerHTML=arr.map(a=>'<div class="asset-row"><div><div class="asset-name">'+(a.note||names[a.type])+'</div><div class="asset-qty">'+names[a.type]+' • '+assetQtyFmt(a.qty)+'</div></div><button class="asset-delete" onclick="deleteAsset(\''+a.id+'\')">×</button></div>').join('');}
+function updateAssetMarket(){const prices=assetMarket;const arr=readAssets();let total=0;const by={gold:0,bitcoin:0,usdt:0,usd:0};const ready={gold:prices.gold18>0,bitcoin:prices.bitcoin>0&&prices.dollar>0,usdt:(prices.usdt||prices.dollar)>0,usd:prices.dollar>0};arr.forEach(a=>{let unit=0;if(a.type==='gold')unit=prices.gold18;if(a.type==='bitcoin')unit=prices.bitcoin*prices.dollar;if(a.type==='usdt')unit=prices.usdt||prices.dollar;if(a.type==='usd')unit=prices.dollar;const val=a.qty*unit;if(Number.isFinite(val)&&val>0){total+=val;by[a.type]+=val}});const hasAny=arr.some(a=>ready[a.type]);const home=document.getElementById('homeAssetsTotal');if(home)home.textContent=hasAny?assetMoney(total):arr.length?'در حال دریافت قیمت...':'۰ تومان';const hlist=document.getElementById('homeAssetsList');if(hlist){if(!arr.length)hlist.innerHTML='<div style="color:var(--muted);font-size:13px">هنوز دارایی ثبت نشده است.</div>';else hlist.innerHTML=Object.entries(by).filter(([k,v])=>v>0).map(([k,v])=>'<div class="expense"><span>'+({gold:'طلا',bitcoin:'بیت‌کوین',usdt:'تتر',usd:'دلار'}[k])+'</span><b class="green">'+assetMoney(v)+'</b></div>').join('')||'<div style="color:var(--muted);font-size:13px">قیمت‌ها در حال دریافت است...</div>'}renderAssetsDetail();}
+function renderAssetsDetail(){const arr=readAssets(),box=document.getElementById('assetsDetailList'),totalEl=document.getElementById('assetsDetailTotal'),note=document.getElementById('assetsDetailNote');if(!box||!totalEl)return;let total=0;const rows=arr.map(a=>{let unit=0,unitText='';if(a.type==='gold'){unit=assetMarket.gold18;unitText=assetMoney(unit)+' / گرم'}if(a.type==='bitcoin'){unit=assetMarket.bitcoin*assetMarket.dollar;unitText=assetMoney(unit)+' / بیت‌کوین'}if(a.type==='usdt'){unit=assetMarket.usdt||assetMarket.dollar;unitText=assetMoney(unit)+' / تتر'}if(a.type==='usd'){unit=assetMarket.dollar;unitText=assetMoney(unit)+' / دلار'}const value=a.qty*unit;total+=Number.isFinite(value)?value:0;return {a,unit,unitText,value}});const anyReady=rows.some(r=>r.value>0);totalEl.textContent=anyReady?assetMoney(total):(arr.length?'در حال دریافت قیمت...':'۰ تومان');if(note)note.textContent='طلا بر پایه طلای ۱۸ عیار؛ رمزارزها با قیمت دلاری × دلار آزاد ایران محاسبه می‌شوند.';box.innerHTML=rows.length?rows.map(r=>'<div class="asset-detail-row"><div><div class="asset-detail-name">'+(r.a.note||({gold:'طلا ۱۸ عیار',bitcoin:'بیت‌کوین',usdt:'تتر',usd:'دلار'}[r.a.type]))+'</div><div class="asset-detail-meta">'+assetQtyFmt(r.a.qty)+' × '+r.unitText+'</div></div><div class="asset-detail-val">'+assetMoney(r.value)+'</div></div>').join(''):'<div style="color:var(--muted);font-size:13px">هنوز دارایی ثبت نشده است.</div>';}
+function primeAssetMarketFromCache(){
+  try{
+    const m=JSON.parse(localStorage.getItem('polito_market_data_v3')||'{}')||{};
+    const d=Number(m.dollar)||Number(localStorage.getItem('polito_dollar_toman_cache')||0);
+    if(d>0)assetMarket.dollar=d;
+    if(Number(m.gold18)>0)assetMarket.gold18=Number(m.gold18);
+  }catch(e){}
+  try{
+    const c=JSON.parse(localStorage.getItem('polito_crypto_cache_v2')||'{}')||{};
+    const v=c.values||{};
+    if(Number(v.bitcoin)>0)assetMarket.bitcoin=Number(v.bitcoin);
+    if(!assetMarket.usdt&&assetMarket.dollar)assetMarket.usdt=Number(v.tether)>0?Number(v.tether)*assetMarket.dollar:assetMarket.dollar;
+  }catch(e){}
+  updateAssetMarket();
+  if(window._lastCryptoValues)renderCryptoPrices(window._lastCryptoValues,document.getElementById('cryptoUpdate')?.textContent||'قیمت جهانی • بروزرسانی خودکار');
+}
+function hookAssetMarket(){primeAssetMarketFromCache();return Promise.resolve();}
+function normalizeMarketDigits(t){return String(t||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٬،,]/g,'').replace(/٫/g,'.')}
+async function fetchTextSafe(url){
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return await r.text();
+}
+function firstMoneyAfter(text, patterns){
+  const n=normalizeMarketDigits(text);
+  for(const rx of patterns){const m=n.match(rx);if(m){const v=Number(m[1]);if(Number.isFinite(v)&&v>0)return v;}}
+  return 0;
+}
+async function fetchDollarForAssets(){
+  // One source of truth: the same TGJU free-market dollar used by the market card.
+  // Never clear a working value while a refresh is pending.
+  loadCachedMarket();
+  try{await refreshMarketData();}catch(e){}
+  if(!assetMarket.usdt&&assetMarket.dollar)assetMarket.usdt=assetMarket.dollar;
+  updateAssetMarket();
+}
+
+const _startAssets=startGoldAutoRefresh;startGoldAutoRefresh=function(){
+  // Instant local valuation first; network updates never block the UI.
+  primeAssetMarketFromCache();
+  _startAssets();
+  setTimeout(()=>{primeAssetMarketFromCache();renderAssets();updateAssetMarket();},0);
+  setInterval(primeAssetMarketFromCache,5000);
+};
+</script>
+
+<script id="polito-pro-upgrade">
+(function(){
+  const KEY="polito_user_name";
+  const splash=document.createElement("div");
+  splash.id="politoSplash";
+  splash.innerHTML=`
+    <div class="polito-splash-card" dir="rtl">
+      <div class="polito-logo">P</div>
+      <h1 id="politoWelcomeTitle">خوش اومدی به Polito</h1>
+      <p>مدیریت مالی شخصی، ساده‌تر، هوشمندتر و حرفه‌ای‌تر.</p>
+      <div id="politoOnboarding">
+        <input id="politoNameInput" type="text" maxlength="40" autocomplete="name"
+               placeholder="اسمت رو وارد کن">
+        <button id="politoStartBtn">شروع کنیم</button>
+      </div>
+    </div>`;
+  document.body.prepend(splash);
+
+  const greeting=document.createElement("div");
+  greeting.className="polito-greeting";
+  greeting.innerHTML=`<div class="polito-greeting-inner" dir="rtl"></div>`;
+  document.body.appendChild(greeting);
+
+  const name=(localStorage.getItem(KEY)||"").trim();
+
+  function cleanName(v){
+    return v.replace(/\s+/g," ").trim().slice(0,40);
+  }
+  function showGreeting(n){
+    const el=greeting.querySelector(".polito-greeting-inner");
+    el.textContent="سلام "+n+" 👋 خوش اومدی";
+    greeting.classList.add("show");
+    setTimeout(()=>greeting.classList.remove("show"),3200);
+  }
+  function finish(n, first){
+    n=cleanName(n);
+    if(!n) return;
+    localStorage.setItem(KEY,n);
+    splash.classList.add("hide");
+    setTimeout(()=>splash.remove(),650);
+    setTimeout(()=>showGreeting(n),250);
+    // Expose for the rest of the app.
+    window.politoUserName=n;
+    document.dispatchEvent(new CustomEvent("politoUserReady",{detail:{name:n,firstVisit:first}}));
+  }
+
+  if(name){
+    splash.innerHTML=`
+      <div class="polito-splash-card" dir="rtl">
+        <div class="polito-logo">P</div>
+        <h1>سلام ${name} 👋</h1>
+        <p>خوش اومدی. آماده‌ای وضعیت مالی امروزت رو ببینی؟</p>
+      </div>`;
+    setTimeout(()=>finish(name,false),950);
+  }else{
+    const input=splash.querySelector("#politoNameInput");
+    const btn=splash.querySelector("#politoStartBtn");
+    function submit(){finish(input.value,true)}
+    btn.addEventListener("click",submit);
+    input.addEventListener("keydown",e=>{if(e.key==="Enter")submit()});
+    setTimeout(()=>input.focus(),300);
+  }
+})();
+</script>
+
+
+<script>document.addEventListener("DOMContentLoaded",()=>{let saved="fa";try{saved=localStorage.getItem("polito_language")||"fa"}catch(e){}const sel=document.getElementById("language");if(sel)sel.value=saved;if(typeof setLanguage==="function")setLanguage(saved);});</script>
+<script src="https://api.tgju.org/v1/widget/v2" defer></script>
+</body>
+</html>

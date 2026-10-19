@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>دخل و خرج | مدیریت مالی</title>
+<title>Polito | پولیتو</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -192,6 +192,31 @@ body{background:var(--pro-bg);}
 @media(max-width:390px){.asset-type-tabs{grid-template-columns:repeat(2,1fr)}.asset-form-grid{grid-template-columns:1fr}}
 </style>
 
+
+<!-- Polito progressive layer: typography, data safety, and update controls -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style id="polito-safe-enhancements">
+  :root { --kn-version: "1.1.0"; }
+  html, body, button, input, select, textarea, option {
+    font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
+  }
+  button, input, select { -webkit-tap-highlight-color: transparent; }
+  .kn-update-card { border:1px solid var(--line); background:linear-gradient(145deg,var(--card),var(--bg)); }
+  .kn-update-head { display:flex;align-items:center;justify-content:space-between;gap:12px; }
+  .kn-version-pill { display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;background:var(--bg);border:1px solid var(--line);font-size:11px;font-weight:800;white-space:nowrap; }
+  .kn-update-info { font-size:12px;line-height:1.9;color:var(--muted);margin-top:10px;white-space:pre-line; }
+  .kn-actions { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px; }
+  .kn-actions button { margin:0!important;min-height:44px;padding:10px 8px!important;font-size:12px; }
+  .kn-secondary { border:1px solid var(--line)!important;background:var(--card)!important;color:var(--text)!important;box-shadow:none!important; }
+  .kn-status { font-size:11px;line-height:1.8;margin-top:9px;color:var(--muted);min-height:18px; }
+  .kn-status.ok { color:#15966b; } .kn-status.err { color:var(--danger); }
+  @media(max-width:360px){.kn-actions{grid-template-columns:1fr}}
+</style>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#176b55">
 </head>
 <body>
 <div class="app">
@@ -384,6 +409,23 @@ body{background:var(--pro-bg);}
    <option value="blue" data-i18n="themeBlue">آبی و سفید</option><option value="green" data-i18n="themeGreen">سبز</option><option value="luxury" data-i18n="themeLuxury">لوکس و سلطنتی</option><option value="dark" data-i18n="themeDark">تیره</option><option value="pastel" data-i18n="themePastel">پاستیلی</option>
   </select>
  </div>
+
+  <div class="card kn-update-card" id="knUpdateCard">
+    <div class="kn-update-head">
+      <div><b>بروزرسانی برنامه</b><div class="sub">نسخه وب و اندروید متصل به سایت</div></div>
+      <span class="kn-version-pill" id="knCurrentVersion">نسخه ۱.۱.۰</span>
+    </div>
+    <div class="kn-update-info" id="knUpdateInfo">در این بخش اطلاعات نسخه و تغییرات جدید نمایش داده می‌شود.</div>
+    <button type="button" class="primary" id="knCheckUpdate">بررسی بروزرسانی</button>
+    <div class="kn-status" id="knUpdateStatus" role="status" aria-live="polite"></div>
+    <div class="kn-actions">
+      <button type="button" class="primary kn-secondary" id="knExportData">پشتیبان‌گیری از داده‌ها</button>
+      <button type="button" class="primary kn-secondary" id="knImportData">بازیابی پشتیبان</button>
+    </div>
+    <input type="file" id="knImportFile" accept="application/json,.json" hidden>
+    <div class="kn-status">اطلاعات مالی فعلی در حافظه همین مرورگر باقی می‌ماند. بروزرسانی، کلیدهای ذخیره‌سازی قبلی را پاک نمی‌کند. برای اطمینان، پیش از تغییرات مهم پشتیبان بگیرید.</div>
+  </div>
+
 </section>
 
 
@@ -1134,5 +1176,112 @@ const _startAssets=startGoldAutoRefresh;startGoldAutoRefresh=function(){
 
 <script>document.addEventListener("DOMContentLoaded",()=>{let saved="fa";try{saved=localStorage.getItem("polito_language")||"fa"}catch(e){}const sel=document.getElementById("language");if(sel)sel.value=saved;if(typeof setLanguage==="function")setLanguage(saved);});</script>
 <script src="https://api.tgju.org/v1/widget/v2" defer></script>
+
+<script id="polito-safe-enhancements-js">
+(function(){
+  'use strict';
+  const CURRENT_VERSION = '1.1.0';
+  const VERSION_URL = './version.json';
+  const statusEl = () => document.getElementById('knUpdateStatus');
+  const infoEl = () => document.getElementById('knUpdateInfo');
+  const versionEl = () => document.getElementById('knCurrentVersion');
+  const fa = value => String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+  function status(message, kind) {
+    const el = statusEl(); if (!el) return;
+    el.textContent = message;
+    el.className = 'kn-status' + (kind ? ' ' + kind : '');
+  }
+  function setVersion(v) { if (versionEl()) versionEl().textContent = 'نسخه ' + fa(v || CURRENT_VERSION); }
+  function compareVersions(a,b) {
+    const aa=String(a).split('.').map(Number), bb=String(b).split('.').map(Number);
+    for(let i=0;i<Math.max(aa.length,bb.length);i++){const x=aa[i]||0,y=bb[i]||0;if(x>y)return 1;if(x<y)return -1;}
+    return 0;
+  }
+  async function checkUpdate(silent) {
+    status('در حال بررسی نسخه منتشرشده…');
+    try {
+      const response = await fetch(VERSION_URL + '?t=' + Date.now(), {cache:'no-store'});
+      if (!response.ok) throw new Error('version.json در سایت منتشر نشده است.');
+      const remote = await response.json();
+      const latest = String(remote.version || CURRENT_VERSION);
+      setVersion(CURRENT_VERSION);
+      if (infoEl()) {
+        const changes = Array.isArray(remote.changelog) ? remote.changelog.map(x=>'• '+x).join('\n') : '• بهبود پایداری و حفظ اطلاعات';
+        infoEl().textContent = 'نسخه فعلی: ' + fa(CURRENT_VERSION) + '\nنسخه منتشرشده: ' + fa(latest) + '\n\nتغییرات این نسخه:\n' + changes;
+      }
+      if (compareVersions(latest,CURRENT_VERSION)>0) {
+        status('نسخه جدید پیدا شد. برای دریافت آن، صفحه را تازه‌سازی کنید.', 'ok');
+        if (!silent && confirm('نسخه جدید ' + latest + ' منتشر شده است. اکنون صفحه بروزرسانی شود؟')) {
+          try { if ('serviceWorker' in navigator) { const regs=await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r=>r.update())); } } catch(e) {}
+          location.reload();
+        }
+      } else {
+        status('برنامه به‌روز است. اطلاعات شما دست‌نخورده باقی مانده است.', 'ok');
+      }
+    } catch (e) {
+      setVersion(CURRENT_VERSION);
+      if (infoEl()) infoEl().textContent = 'نسخه فعلی: ' + fa(CURRENT_VERSION) + '\nبرای دریافت اطلاعات نسخه جدید، ابتدا فایل version.json را همراه index.html در ریشه سایت منتشر کنید.';
+      status('بررسی آنلاین انجام نشد؛ اتصال اینترنت یا انتشار version.json را بررسی کنید.', 'err');
+    }
+  }
+  function exportData() {
+    try {
+      const snapshot = {
+        app:'Polito finance app',
+        formatVersion:1,
+        exportedAt:new Date().toISOString(),
+        origin:location.origin,
+        storage:{}
+      };
+      for(let i=0;i<localStorage.length;i++){
+        const key=localStorage.key(i);
+        if(key!==null) snapshot.storage[key]=localStorage.getItem(key);
+      }
+      const blob=new Blob([JSON.stringify(snapshot,null,2)],{type:'application/json;charset=utf-8'});
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download='polito-backup-'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      status('فایل پشتیبان با موفقیت آماده شد. آن را در جای امن نگه دارید.','ok');
+    } catch(e) { status('ساخت فایل پشتیبان ناموفق بود.','err'); }
+  }
+  function importData(file) {
+    if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try {
+        const snapshot=JSON.parse(String(reader.result||''));
+        if(!snapshot || !snapshot.storage || typeof snapshot.storage!=='object') throw new Error('invalid backup');
+        const keys=Object.keys(snapshot.storage);
+        if(!keys.length) throw new Error('empty backup');
+        if(!confirm('بازیابی اطلاعات، مقادیر ذخیره‌شده فعلی با کلیدهای مشترک را جایگزین می‌کند. قبل از ادامه، پشتیبان فعلی را گرفته‌اید؟'))return;
+        // Only keys contained in the chosen backup are restored. No other localStorage keys are deleted.
+        keys.forEach(key=>{ if(typeof snapshot.storage[key]==='string') localStorage.setItem(key,snapshot.storage[key]); });
+        status('بازیابی انجام شد. صفحه برای بارگذاری اطلاعات بازیابی‌شده تازه‌سازی می‌شود.','ok');
+        setTimeout(()=>location.reload(),700);
+      } catch(e) { status('فایل پشتیبان معتبر نیست یا قابل خواندن نیست.','err'); }
+    };
+    reader.onerror=()=>status('خواندن فایل ناموفق بود.','err');
+    reader.readAsText(file);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    setVersion(CURRENT_VERSION);
+    const check=document.getElementById('knCheckUpdate');
+    if(check)check.addEventListener('click',()=>checkUpdate(false));
+    const exp=document.getElementById('knExportData');
+    if(exp)exp.addEventListener('click',exportData);
+    const imp=document.getElementById('knImportData'), file=document.getElementById('knImportFile');
+    if(imp&&file){imp.addEventListener('click',()=>file.click());file.addEventListener('change',()=>{importData(file.files&&file.files[0]);file.value='';});}
+    checkUpdate(true);
+  });
+  // Keep the original app's localStorage keys untouched; this layer is additive only.
+})();
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
+</script>
 </body>
 </html>
