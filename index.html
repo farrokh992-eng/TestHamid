@@ -198,7 +198,7 @@ body{background:var(--pro-bg);}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style id="polito-safe-enhancements">
-  :root { --kn-version: "1.1.0"; }
+  :root { --kn-version: "1.2.0"; }
   html, body, button, input, select, textarea, option {
     font-family: "Vazirmatn", Tahoma, Arial, sans-serif !important;
   }
@@ -213,6 +213,29 @@ body{background:var(--pro-bg);}
   .kn-status { font-size:11px;line-height:1.8;margin-top:9px;color:var(--muted);min-height:18px; }
   .kn-status.ok { color:#15966b; } .kn-status.err { color:var(--danger); }
   @media(max-width:360px){.kn-actions{grid-template-columns:1fr}}
+</style>
+
+<style id="polito-claymorphism-themes">
+  /* Soft claymorphism: tactile depth while preserving the original layout and components. */
+  body{background-image:radial-gradient(ellipse at 12% 0%,color-mix(in srgb,var(--primary) 7%,transparent),transparent 38%);transition:background-color .25s,color .25s}
+  .card,.welcome-box,.kn-update-card{border:1px solid color-mix(in srgb,var(--card) 72%,var(--line));box-shadow:8px 8px 20px color-mix(in srgb,var(--text) 7%,transparent),-7px -7px 18px color-mix(in srgb,var(--card) 88%,transparent);}
+  .icon,.stat,.cat,.crypto-row,.asset-row,.assets-total-card,.polito-compact-datetime{box-shadow:5px 5px 12px color-mix(in srgb,var(--text) 7%,transparent),-4px -4px 12px color-mix(in srgb,var(--card) 92%,transparent);}
+  input,select,.asset-type-tab{box-shadow:inset 3px 3px 7px color-mix(in srgb,var(--text) 6%,transparent),inset -3px -3px 7px color-mix(in srgb,var(--card) 80%,transparent);border-color:color-mix(in srgb,var(--line) 82%,var(--card));}
+  button.primary,.homebtn{box-shadow:5px 6px 12px color-mix(in srgb,var(--primary) 28%,transparent),inset 1px 1px 2px #ffffff35;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+  button.primary:active,.homebtn:active,.icon:active,.cat:active{transform:translateY(1px) scale(.985);filter:saturate(1.08)}
+  .bottom{box-shadow:0 -5px 18px color-mix(in srgb,var(--text) 7%,transparent);border-top-color:color-mix(in srgb,var(--line) 80%,var(--card));}
+  .dark{--bg:#171b25;--card:#242a37;--text:#f1f3f8;--muted:#a6afc0;--primary:#7797ff;--primary2:#4d6bd1;--line:#343c4c;--danger:#ff7e88}
+  .dark-blue-theme{--bg:#111b2b;--card:#1b2a40;--text:#eff5ff;--muted:#a4b7d2;--primary:#5b9dff;--primary2:#326bd0;--line:#2b405b;--danger:#ff8791}
+  .dark-purple-theme{--bg:#1b1528;--card:#2b203d;--text:#f8f1ff;--muted:#c0b0d3;--primary:#b58aff;--primary2:#8055c7;--line:#443354;--danger:#ff899e}
+  .dark-green-theme{--bg:#101f1b;--card:#1b3029;--text:#eaf8f0;--muted:#a3c2b3;--primary:#4ed0a0;--primary2:#238767;--line:#2b493e;--danger:#ff8d91}
+  .dark-charcoal-theme{--bg:#18191b;--card:#27292c;--text:#f5f5f5;--muted:#b0b3b7;--primary:#d0a96a;--primary2:#9c7438;--line:#3c3e42;--danger:#ff8585}
+  .dark .card,.dark .welcome-box,.dark .kn-update-card{border-color:color-mix(in srgb,var(--line) 80%,var(--card));box-shadow:8px 8px 18px #00000035,-5px -5px 14px #ffffff04}
+  .dark .icon,.dark .stat,.dark .cat,.dark .crypto-row,.dark .asset-row,.dark .assets-total-card,.dark .polito-compact-datetime{border-color:var(--line);box-shadow:5px 5px 12px #00000030,-3px -3px 9px #ffffff04}
+  .dark input,.dark select,.dark .asset-type-tab{border-color:var(--line);box-shadow:inset 3px 3px 7px #00000030,inset -2px -2px 6px #ffffff04}
+  .dark .cat.selected{background:color-mix(in srgb,var(--primary) 18%,var(--card));color:var(--primary)}
+  .dark .bottom{background:var(--card);border-top-color:var(--line);box-shadow:0 -5px 18px #00000035}
+  .dark .homebtn{border-color:var(--bg)}
+  @media(prefers-reduced-motion:reduce){body,button.primary,.homebtn{transition:none!important}}
 </style>
 
 <link rel="manifest" href="./manifest.webmanifest">
@@ -406,14 +429,14 @@ body{background:var(--pro-bg);}
   <select id="language" onchange="setLanguage(this.value)"><option value="fa">فارسی</option><option value="en">English</option></select>
   <label id="themeLabel">تم</label>
   <select id="theme" onchange="setTheme(this.value)">
-   <option value="blue" data-i18n="themeBlue">آبی و سفید</option><option value="green" data-i18n="themeGreen">سبز</option><option value="luxury" data-i18n="themeLuxury">لوکس و سلطنتی</option><option value="dark" data-i18n="themeDark">تیره</option><option value="pastel" data-i18n="themePastel">پاستیلی</option>
+   <option value="blue" data-i18n="themeBlue">آبی و سفید</option><option value="green" data-i18n="themeGreen">سبز</option><option value="luxury" data-i18n="themeLuxury">لوکس و سلطنتی</option><option value="dark" data-i18n="themeDark">دارک کلاسیک</option><option value="dark-blue" data-i18n="themeDarkBlue">دارک آبی</option><option value="dark-purple" data-i18n="themeDarkPurple">دارک بنفش</option><option value="dark-green" data-i18n="themeDarkGreen">دارک سبز</option><option value="dark-charcoal" data-i18n="themeDarkCharcoal">دارک زغالی</option><option value="pastel" data-i18n="themePastel">پاستیلی</option>
   </select>
  </div>
 
   <div class="card kn-update-card" id="knUpdateCard">
     <div class="kn-update-head">
       <div><b>بروزرسانی برنامه</b><div class="sub">نسخه وب و اندروید متصل به سایت</div></div>
-      <span class="kn-version-pill" id="knCurrentVersion">نسخه ۱.۱.۰</span>
+      <span class="kn-version-pill" id="knCurrentVersion">نسخه ۱.۲.۰</span>
     </div>
     <div class="kn-update-info" id="knUpdateInfo">در این بخش اطلاعات نسخه و تغییرات جدید نمایش داده می‌شود.</div>
     <button type="button" class="primary" id="knCheckUpdate">بررسی بروزرسانی</button>
@@ -569,17 +592,21 @@ function showPage(id,btn){const target=document.getElementById(id);if(!target)re
 function openSettings(){showPage('settings')}
 function toggleExtra(){showPage('extra')}
 function setTheme(v){
- const allowed=['blue','green','luxury','dark','pastel'];if(!allowed.includes(v))v='blue';
- document.body.classList.remove('blue-theme','pastel','dark','green-theme','luxury-theme');
+ const allowed=['blue','green','luxury','dark','dark-blue','dark-purple','dark-green','dark-charcoal','pastel'];if(!allowed.includes(v))v='blue';
+ document.body.classList.remove('blue-theme','pastel','dark','dark-blue-theme','dark-purple-theme','dark-green-theme','dark-charcoal-theme','green-theme','luxury-theme');
  if(v==='blue')document.body.classList.add('blue-theme');
  if(v==='pastel')document.body.classList.add('pastel');
- if(v==='dark')document.body.classList.add('dark');
+ if(v==='dark'||v.startsWith('dark-'))document.body.classList.add('dark');
+ if(v==='dark-blue')document.body.classList.add('dark-blue-theme');
+ if(v==='dark-purple')document.body.classList.add('dark-purple-theme');
+ if(v==='dark-green')document.body.classList.add('dark-green-theme');
+ if(v==='dark-charcoal')document.body.classList.add('dark-charcoal-theme');
  if(v==='green')document.body.classList.add('green-theme');
  if(v==='luxury')document.body.classList.add('luxury-theme');
  const selector=document.getElementById('theme');if(selector&&selector.value!==v)selector.value=v;
  try{localStorage.setItem('theme',v)}catch(e){}
 }
-const T={fa:{greetingKicker:'خوش اومدی',welcomeTitle:'خوش اومدی 👋',welcomeText:'برای شروع، اسمت رو بهم بگو تا از این به بعد برنامه با اسم خودت بهت خوشامد بگه.',nameLabel:'نام شما',startBtn:'شروع کنیم',appTitle:'دخل و خرج',subtitle:'مدیریت ساده درآمد و هزینه',remainingLabel:'باقی‌مانده این ماه',balanceNote:'درآمد منهای مجموع هزینه‌ها',incomeLabel:'درآمد',expenseLabel:'هزینه',analysisTitle:'تحلیل هزینه‌ها',monthLabel:'این ماه',incomeTitle:'درآمد ماهانه',monthSelectLabel:'ماه',incomeAmountLabel:'مبلغ درآمد',saveIncomeBtn:'ثبت درآمد',expensesTitle:'هزینه‌ها',expenseMonthLabel:'ماه',billsTitle:'قبوض',billAmountLabel:'مبلغ قبض',saveBillBtn:'ثبت قبض',installmentsTitle:'اقساط',installmentNameLabel:'عنوان قسط',installmentAmountLabel:'مبلغ قسط',saveInstallmentBtn:'ثبت قسط',customTitle:'هزینه سفارشی',customNameLabel:'عنوان هزینه',expenseAmountLabel:'مبلغ',saveExpenseBtn:'ثبت هزینه',settingsTitle:'تنظیمات',languageLabel:'زبان',themeLabel:'تم',themeBlue:'آبی و سفید',themeGreen:'سبز',themeLuxury:'لوکس و سلطنتی',themeDark:'تیره',themePastel:'پاستیلی',extraTitle:'پیشرفته',navHome:'خانه',navIncome:'درآمد',navExpenses:'هزینه‌ها',oilTitle:'قیمت نفت',oilBrent:'نفت برنت',oilNote:'نمایش فقط در صورت وجود نرخ نفت در منبع بازار فعلی.',otherFxTitle:'ارز سایر کشورها',otherFxLoading:'ارزهای موجود در منبع در اینجا نمایش داده می‌شوند.',toolsTitle:'ابزار',toolsSub:'محاسبه‌گرهای کاربردی مالی',goldCalcSub:'محاسبه ارزش طلا',goldCalcTitle:'محاسبه قیمت طلای نو و دست‌دوم',goldCalcDesc:'نرخ هر گرم طلای ۱۸ عیار از همان داده بازار برنامه خوانده می‌شود.',goldWeightLabel:'وزن طلا (گرم)',goldSootLabel:'سوت (هر ۱۰۰۰ سوت = ۱ گرم)',goldWageLabel:'اجرت ساخت (درصد، برای طلای نو)',calculateBtn:'محاسبه قیمت',goldCalcHint:'وزن را وارد کنید تا قیمت تقریبی طلای نو و دست‌دوم نمایش داده شود.',goldCalcDisclaimer:'برآورد تقریبی است؛ اجرت واقعی، سود فروشنده و مالیات قابل‌اعمال در فاکتور نهایی ممکن است متفاوت باشد.'},en:{greetingKicker:'Welcome back',welcomeTitle:'Welcome 👋',welcomeText:'Tell us your name once, and the app will remember it for your next visits.',nameLabel:'Your name',startBtn:'Get started',appTitle:'Income & Expenses',subtitle:'Simple money management',remainingLabel:'Remaining this month',balanceNote:'Income minus total expenses',incomeLabel:'Income',expenseLabel:'Expenses',analysisTitle:'Expense analysis',monthLabel:'This month',incomeTitle:'Monthly income',monthSelectLabel:'Month',incomeAmountLabel:'Income amount',saveIncomeBtn:'Save income',expensesTitle:'Expenses',expenseMonthLabel:'Month',expenseTypeLabel:'Expense type',customNameLabel:'Expense title',expenseAmountLabel:'Amount',saveExpenseBtn:'Save expense',settingsTitle:'Settings',languageLabel:'Language',themeLabel:'Theme',themeBlue:'Blue & White',themeGreen:'Green',themeLuxury:'Luxury Royale',themeDark:'Dark',themePastel:'Pastel',extraTitle:'Advanced',navHome:'Home',navIncome:'Income',navExpenses:'Expenses',oilTitle:'Oil prices',oilBrent:'Brent crude oil',oilNote:'Shown only if an oil quote is available from the current market source.',otherFxTitle:'Other currencies',otherFxLoading:'Currencies available from the source will appear here.',toolsTitle:'Tools',toolsSub:'Useful financial calculators',goldCalcSub:'Gold value calculator',goldCalcTitle:'New and second-hand gold calculator',goldCalcDesc:'Uses the app’s existing 18K gold market rate.',goldWeightLabel:'Gold weight (grams)',goldSootLabel:'Soot (1,000 soot = 1 gram)',goldWageLabel:'Making charge (%, new gold)',calculateBtn:'Calculate price',goldCalcHint:'Enter a weight to estimate new and second-hand gold prices.',goldCalcDisclaimer:'Estimate only. Actual making charges, seller profit and applicable tax may differ on the final invoice.'}};
+const T={fa:{greetingKicker:'خوش اومدی',welcomeTitle:'خوش اومدی 👋',welcomeText:'برای شروع، اسمت رو بهم بگو تا از این به بعد برنامه با اسم خودت بهت خوشامد بگه.',nameLabel:'نام شما',startBtn:'شروع کنیم',appTitle:'دخل و خرج',subtitle:'مدیریت ساده درآمد و هزینه',remainingLabel:'باقی‌مانده این ماه',balanceNote:'درآمد منهای مجموع هزینه‌ها',incomeLabel:'درآمد',expenseLabel:'هزینه',analysisTitle:'تحلیل هزینه‌ها',monthLabel:'این ماه',incomeTitle:'درآمد ماهانه',monthSelectLabel:'ماه',incomeAmountLabel:'مبلغ درآمد',saveIncomeBtn:'ثبت درآمد',expensesTitle:'هزینه‌ها',expenseMonthLabel:'ماه',billsTitle:'قبوض',billAmountLabel:'مبلغ قبض',saveBillBtn:'ثبت قبض',installmentsTitle:'اقساط',installmentNameLabel:'عنوان قسط',installmentAmountLabel:'مبلغ قسط',saveInstallmentBtn:'ثبت قسط',customTitle:'هزینه سفارشی',customNameLabel:'عنوان هزینه',expenseAmountLabel:'مبلغ',saveExpenseBtn:'ثبت هزینه',settingsTitle:'تنظیمات',languageLabel:'زبان',themeLabel:'تم',themeBlue:'آبی و سفید',themeGreen:'سبز',themeLuxury:'لوکس و سلطنتی',themeDark:'دارک کلاسیک',themeDarkBlue:'دارک آبی',themeDarkPurple:'دارک بنفش',themeDarkGreen:'دارک سبز',themeDarkCharcoal:'دارک زغالی',themePastel:'پاستیلی',extraTitle:'پیشرفته',navHome:'خانه',navIncome:'درآمد',navExpenses:'هزینه‌ها',oilTitle:'قیمت نفت',oilBrent:'نفت برنت',oilNote:'نمایش فقط در صورت وجود نرخ نفت در منبع بازار فعلی.',otherFxTitle:'ارز سایر کشورها',otherFxLoading:'ارزهای موجود در منبع در اینجا نمایش داده می‌شوند.',toolsTitle:'ابزار',toolsSub:'محاسبه‌گرهای کاربردی مالی',goldCalcSub:'محاسبه ارزش طلا',goldCalcTitle:'محاسبه قیمت طلای نو و دست‌دوم',goldCalcDesc:'نرخ هر گرم طلای ۱۸ عیار از همان داده بازار برنامه خوانده می‌شود.',goldWeightLabel:'وزن طلا (گرم)',goldSootLabel:'سوت (هر ۱۰۰۰ سوت = ۱ گرم)',goldWageLabel:'اجرت ساخت (درصد، برای طلای نو)',calculateBtn:'محاسبه قیمت',goldCalcHint:'وزن را وارد کنید تا قیمت تقریبی طلای نو و دست‌دوم نمایش داده شود.',goldCalcDisclaimer:'برآورد تقریبی است؛ اجرت واقعی، سود فروشنده و مالیات قابل‌اعمال در فاکتور نهایی ممکن است متفاوت باشد.'},en:{greetingKicker:'Welcome back',welcomeTitle:'Welcome 👋',welcomeText:'Tell us your name once, and the app will remember it for your next visits.',nameLabel:'Your name',startBtn:'Get started',appTitle:'Income & Expenses',subtitle:'Simple money management',remainingLabel:'Remaining this month',balanceNote:'Income minus total expenses',incomeLabel:'Income',expenseLabel:'Expenses',analysisTitle:'Expense analysis',monthLabel:'This month',incomeTitle:'Monthly income',monthSelectLabel:'Month',incomeAmountLabel:'Income amount',saveIncomeBtn:'Save income',expensesTitle:'Expenses',expenseMonthLabel:'Month',expenseTypeLabel:'Expense type',customNameLabel:'Expense title',expenseAmountLabel:'Amount',saveExpenseBtn:'Save expense',settingsTitle:'Settings',languageLabel:'Language',themeLabel:'Theme',themeBlue:'Blue & White',themeGreen:'Green',themeLuxury:'Luxury Royale',themeDark:'Classic Dark',themeDarkBlue:'Dark Blue',themeDarkPurple:'Dark Purple',themeDarkGreen:'Dark Green',themeDarkCharcoal:'Dark Charcoal',themePastel:'Pastel',extraTitle:'Advanced',navHome:'Home',navIncome:'Income',navExpenses:'Expenses',oilTitle:'Oil prices',oilBrent:'Brent crude oil',oilNote:'Shown only if an oil quote is available from the current market source.',otherFxTitle:'Other currencies',otherFxLoading:'Currencies available from the source will appear here.',toolsTitle:'Tools',toolsSub:'Useful financial calculators',goldCalcSub:'Gold value calculator',goldCalcTitle:'New and second-hand gold calculator',goldCalcDesc:'Uses the app’s existing 18K gold market rate.',goldWeightLabel:'Gold weight (grams)',goldSootLabel:'Soot (1,000 soot = 1 gram)',goldWageLabel:'Making charge (%, new gold)',calculateBtn:'Calculate price',goldCalcHint:'Enter a weight to estimate new and second-hand gold prices.',goldCalcDisclaimer:'Estimate only. Actual making charges, seller profit and applicable tax may differ on the final invoice.'}};
 
 function setLanguage(lang){
  document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';
@@ -612,7 +639,7 @@ document.getElementById('expenseYear').addEventListener('change',function(){
   document.getElementById('incomeYear').value=this.value;
   saveSelectedDate(); updateHome(); renderExpenses();
 });
-let savedTheme='blue';try{savedTheme=localStorage.getItem('theme')||'blue';if(!localStorage.getItem('polito_theme_migration_v13')){if(savedTheme==='green')savedTheme='blue';localStorage.setItem('polito_theme_migration_v13','1');}}catch(e){};if(!['blue','green','luxury','dark','pastel'].includes(savedTheme))savedTheme='blue';
+let savedTheme='blue';try{savedTheme=localStorage.getItem('theme')||'blue';if(!localStorage.getItem('polito_theme_migration_v13')){if(savedTheme==='green')savedTheme='blue';localStorage.setItem('polito_theme_migration_v13','1');}}catch(e){};if(!['blue','green','luxury','dark','dark-blue','dark-purple','dark-green','dark-charcoal','pastel'].includes(savedTheme))savedTheme='blue';
 document.getElementById('theme').value=savedTheme;
 setTheme(savedTheme);
 updateHome();renderExpenses();updateGreeting();updateTodayDate();showWelcome();
@@ -1180,7 +1207,7 @@ const _startAssets=startGoldAutoRefresh;startGoldAutoRefresh=function(){
 <script id="polito-safe-enhancements-js">
 (function(){
   'use strict';
-  const CURRENT_VERSION = '1.1.0';
+  const CURRENT_VERSION = '1.2.0';
   const VERSION_URL = './version.json';
   const statusEl = () => document.getElementById('knUpdateStatus');
   const infoEl = () => document.getElementById('knUpdateInfo');
